@@ -12,6 +12,9 @@ import {
 import axios from 'axios'
 import { useNavigation } from '@react-navigation/native'
 import * as SecureStore from 'expo-secure-store'
+import SnackBar from './components/SnackBar'
+
+var newOutfit = {}
 
 const GenerateOutfitScreen = () => {
   const [description, setDescription] = useState('')
@@ -19,11 +22,13 @@ const GenerateOutfitScreen = () => {
   const [topImage, setTopImage] = useState(null)
   const [bottomImage, setBottomImage] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [saved, setSaved] = useState(false)
 
   const navigation = useNavigation()
 
   const handleGenerateOutfit = async () => {
     const accessToken = await SecureStore.getItemAsync('accessToken')
+    console.log(accessToken)
     try {
       setLoading(true)
       let response
@@ -74,10 +79,44 @@ const GenerateOutfitScreen = () => {
         }
       )
       setBottomImage(bottomResponse.data.image.blob)
-      setLoading(false)
+      newOutfit = Object.assign(response.data)
     } catch (error) {
       console.error('Error generating outfit:', error.response.data)
     }
+  }
+
+  const handleSaveOutfit = async () => {
+    const accessToken = await SecureStore.getItemAsync('accessToken')
+    const axiosConfig = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+    try {
+      const requestBody = {
+        closet_id: 0,
+        items: [newOutfit.bottom, newOutfit.top],
+        description: newOutfit.description,
+        tags: [1],
+        saved: true,
+        liked: true,
+      }
+
+      const response = await axios.post(
+        'https://vcloset.xyz/api/outfits',
+        requestBody,
+        axiosConfig
+      )
+      if (response.status === 200) {
+        setSaved(true)
+      }
+    } catch (error) {
+      console.error('Error saving outfit:', error)
+    }
+  }
+
+  const handleDismissSnackBar = () => {
+    setSaved(false)
   }
 
   return (
@@ -125,9 +164,16 @@ const GenerateOutfitScreen = () => {
               {generatedOutfit.description}
             </Text>
           </View>
-          <TouchableOpacity style={styles.saveButton}>
+          <TouchableOpacity
+            style={styles.saveButton}
+            onPress={handleSaveOutfit}>
             <Text style={styles.buttonText}>Save Outfit</Text>
           </TouchableOpacity>
+          <SnackBar
+            visible={saved}
+            message='Outfit Saved!'
+            onDismiss={handleDismissSnackBar}
+          />
         </>
       )}
     </ScrollView>
