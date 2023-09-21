@@ -28,7 +28,6 @@ const GenerateOutfitScreen = () => {
 
   const handleGenerateOutfit = async () => {
     const accessToken = await SecureStore.getItemAsync('accessToken')
-    console.log(accessToken)
     try {
       setLoading(true)
       let response
