@@ -1,84 +1,99 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import axios from 'axios';
+import React, { useState } from 'react'
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native'
+import axios from 'axios'
 // import AsyncStorage from '../../node_modules/@react-native-community/async-storage';
-import * as SecureStore from 'expo-secure-store';
-import { useNavigation } from '@react-navigation/native';
+import * as SecureStore from 'expo-secure-store'
+import { useNavigation } from '@react-navigation/native'
 
 async function save(key, value) {
-  await SecureStore.setItemAsync(key, value);
+  await SecureStore.setItemAsync(key, value)
 }
 
 const LoginScreen = () => {
-  const navigation = useNavigation();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [accessToken, setAccessToken] = useState('');
-  const [sessionId, setSessionId] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const navigation = useNavigation()
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [accessToken, setAccessToken] = useState('')
+  const [sessionId, setSessionId] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleLogin = async () => {
-
-    setLoading(true);
-    setError('');
-    const formData = new FormData();
-    formData.append('username', username);
-    formData.append('password', password);
+    setLoading(true)
+    setError('')
+    const formData = new FormData()
+    formData.append('username', username)
+    formData.append('password', password)
 
     try {
-
       const response = await axios.post('https://vcloset.xyz/login', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-      });
+      })
 
-      const { access_token } = response.data;
-      const { session_id } = response.data;
-      setAccessToken(access_token);
-      setSessionId(session_id);
-      await save('accessToken', access_token);
-      await save('sessionId', session_id);
-      navigation.navigate('Home');
+      const { access_token } = response.data
+      const { session_id } = response.data
+      setAccessToken(access_token)
+      setSessionId(session_id)
+      await save('accessToken', access_token)
+      await save('sessionId', session_id)
+      navigation.navigate('Home')
     } catch (error) {
-
-      console.log('error: ', error);
-      setError('Login failed. Please check your credentials.');
+      console.log('error: ', error)
+      setError('Login failed. Please check your credentials.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
+
+  const navigateForgotPassword = async () => {
+    navigation.navigate('ForgotPassword')
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
       <TextInput
         style={styles.input}
-        placeholder="Username"
-        autoCapitalize="none"
+        placeholder='Email Address'
+        autoCapitalize='none'
         value={username}
         onChangeText={(text) => setUsername(text)}
       />
       <TextInput
         style={styles.input}
-        placeholder="Password"
-        autoCapitalize="none"
+        placeholder='Password'
+        autoCapitalize='none'
         secureTextEntry
         value={password}
         onChangeText={(text) => setPassword(text)}
       />
-      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
-
-        <Text style={styles.buttonWhiteText}>{loading ? 'Loading...' : 'Login'}</Text>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleLogin}
+        disabled={loading}>
+        <Text style={styles.buttonWhiteText}>
+          {loading ? 'Loading...' : 'Login'}
+        </Text>
       </TouchableOpacity>
 
       {/* sign up page link */}
-      <TouchableOpacity style={styles.whiteButton} onPress={() => navigation.navigate('SignUp')}>
-
+      <TouchableOpacity
+        style={styles.whiteButton}
+        onPress={() => navigation.navigate('SignUp')}>
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
-
+      {/* Navigates to ForgotPasswordScreen */}
+      <Text style={{ color: 'blue' }} onPress={navigateForgotPassword}>
+        Forgot Password
+      </Text>
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
       {/* {accessToken ? (
         <View style={styles.accessTokenContainer}>
@@ -94,8 +109,8 @@ const LoginScreen = () => {
         </View>
       ) : null} */}
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -161,6 +176,6 @@ const styles = StyleSheet.create({
   accessToken: {
     marginTop: 5,
   },
-});
+})
 
-export default LoginScreen;
+export default LoginScreen
