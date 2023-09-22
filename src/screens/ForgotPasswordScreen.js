@@ -14,7 +14,6 @@ const ForgotPasswordScreen = () => {
       const queryParams = {
         username: email,
       }
-      console.log(email)
       await axios.post(
         `https://vcloset.xyz/forgotPassword`,
         {},
