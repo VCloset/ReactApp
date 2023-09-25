@@ -96,7 +96,7 @@ const GenerateOutfitScreen = () => {
         closet_id: 0,
         items: [newOutfit.bottom, newOutfit.top],
         description: newOutfit.description,
-        tags: [1],
+        tags: 1,
         saved: true,
         liked: true,
       }
