@@ -80,6 +80,7 @@ const ItemScreen = () => {
     <Image
         style={styles.itemImage}
         source={{ uri: decodeBase64Image(item.image.blob) }}
+        resizeMode="contain" // Use "contain" to zoom out and show the whole image
       />
     <Text style={styles.itemName}>{item.name}</Text>
   </TouchableOpacity>

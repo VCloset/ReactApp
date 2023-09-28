@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, FlatList} from 'react-native';
+import { View, Text, Image, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
+import { useNavigation } from '@react-navigation/native';
 
 const OutfitScreen = () => {
   const [outfits, setOutfits] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
 
   useEffect(() => {
-    // Make a GET request to the API to fetch outfits with saved = true
     const fetchOutfits = async () => {
       const accessToken = await SecureStore.getItemAsync('accessToken');
       try {
@@ -18,14 +19,7 @@ const OutfitScreen = () => {
             accept: 'application/json',
           },
         });
-
-        // Filter outfits with saved = true
         const savedOutfits = response.data.filter((outfit) => outfit.saved === true);
-        // sort outfits items by category id 
-        savedOutfits.map((outfit) => {
-          outfit.items.sort((a, b) => a.category_id - b.category_id)
-        })
-        // Fetch and set images for each item in each outfit
         const outfitsWithImages = await Promise.all(
           savedOutfits.map(async (outfit) => {
             const itemsWithImages = await Promise.all(
@@ -44,8 +38,10 @@ const OutfitScreen = () => {
         );
 
         setOutfits(outfitsWithImages);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching outfits:', error.response);
+        setLoading(false);
       }
     };
 
@@ -61,9 +57,8 @@ const OutfitScreen = () => {
               <Image
                 source={{ uri: `data:image/png;base64,${item.image}` }}
                 style={styles.itemImage}
-                resizeMode="contain" // Use "contain" to zoom out and show the whole image
+                resizeMode="contain"
               />
-              {/* <Text style={styles.itemName}>{item.name}</Text> */}
             </View>
           ))}
         </View>
@@ -71,12 +66,35 @@ const OutfitScreen = () => {
     );
   };
 
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
+  // Check if there are no saved outfits
+  if (outfits.length === 0) {
+    return (
+      <View style={styles.noOutfitsContainer}>
+        <Text style={styles.noOutfitsText}>No saved outfits found.</Text>
+        <TouchableOpacity
+          style={styles.generateButton}
+          onPress={() => navigation.navigate('GenerateOutfit')}
+        >
+          <Text style={styles.generateButtonText}>Generate Outfit</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <FlatList
       data={outfits}
       renderItem={renderItem}
       keyExtractor={(item) => item.id.toString()}
-      numColumns={3} // Display 3 outfits in a row
+      numColumns={3}
     />
   );
 };
@@ -87,27 +105,42 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
   },
-  outfitDescription: {
-    fontSize: 16,
-    marginBottom: 12,
-  },
   itemContainer: {
-    flexDirection: 'column', // Display items vertically
-    alignItems: 'center', // Center items horizontally
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   item: {
     alignItems: 'center',
-    // marginBottom: 16, // Add space between items
-    marginBottom: -15,
   },
   itemImage: {
     width: 100,
     height: 100,
-    resizeMode: 'cover',
-    marginBottom: 8,
+    resizeMode: 'contain',
+    marginBottom: -5,
   },
-  itemName: {
-    fontSize: 14,
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noOutfitsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noOutfitsText: {
+    fontSize: 18,
+    marginBottom: 20,
+  },
+  generateButton: {
+    backgroundColor: '#007bff',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  generateButtonText: {
+    color: '#fff',
+    fontSize: 16,
   },
 });
 
