@@ -9,6 +9,7 @@ import ScanItemScreen from './src/screens/ScanItemScreen' // Import the ScanItem
 import GenerateOutfitScreen from './src/screens/GenerateOutfitScreen' // Import the GenerateOutfitScreen component
 import ViewItemScreen from './src/screens/ViewItemScreen'
 import OutfitScreen from './src/screens/OutfitScreen'
+import ViewOutfitScreen from './src/screens/ViewOutfitScreen'
 import * as SecureStore from 'expo-secure-store'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
@@ -45,7 +46,12 @@ const App = () => {
 //   "owner_id": 1
 // }
   const getClosetID = async () => {
+    
     const accessToken = await SecureStore.getItemAsync('accessToken')
+
+    if (!accessToken) {
+      return
+    }
     try {
       const response = await axios.get('https://vcloset.xyz/api/closets', {
         headers: {
@@ -113,6 +119,7 @@ const App = () => {
         <Stack.Screen name='ForgotPassword' component={ForgotPasswordScreen} />
         <Stack.Screen name='ViewItem' component={ViewItemScreen} />
         <Stack.Screen name='Outfit' component={OutfitScreen} />
+        <Stack.Screen name='ViewOutfit' component={ViewOutfitScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   )

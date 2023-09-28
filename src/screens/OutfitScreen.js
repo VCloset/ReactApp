@@ -20,6 +20,12 @@ const OutfitScreen = () => {
           },
         });
         const savedOutfits = response.data.filter((outfit) => outfit.saved === true);
+
+        // sort the items in each outfit by category_id
+        savedOutfits.forEach((outfit) => {
+          outfit.items.sort((a, b) => a.category_id - b.category_id);
+        });
+
         const outfitsWithImages = await Promise.all(
           savedOutfits.map(async (outfit) => {
             const itemsWithImages = await Promise.all(
@@ -48,21 +54,28 @@ const OutfitScreen = () => {
     fetchOutfits();
   }, []);
 
+  const handleOutfitPress = (outfit) => {
+    // Navigate to the "ViewOutfit" screen with the outfit ID as a route parameter
+    navigation.navigate('ViewOutfit', { outfit: outfit });
+  };
+
   const renderItem = ({ item }) => {
     return (
-      <View style={styles.outfitContainer}>
-        <View style={styles.itemContainer}>
-          {item.items.map((item) => (
-            <View key={item.id} style={styles.item}>
-              <Image
-                source={{ uri: `data:image/png;base64,${item.image}` }}
-                style={styles.itemImage}
-                resizeMode="contain"
-              />
-            </View>
-          ))}
+      <TouchableOpacity onPress={()=>handleOutfitPress(item)}>
+        <View style={styles.outfitContainer}>
+          <View style={styles.itemContainer}>
+            {item.items.map((item) => (
+              <View key={item.id} style={styles.item}>
+                <Image
+                  source={{ uri: `data:image/png;base64,${item.image}` }}
+                  style={styles.itemImage}
+                  resizeMode="contain"
+                />
+              </View>
+            ))}
+          </View>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -90,6 +103,7 @@ const OutfitScreen = () => {
   }
 
   return (
+    // 
     <FlatList
       data={outfits}
       renderItem={renderItem}
