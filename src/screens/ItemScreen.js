@@ -1,52 +1,70 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react'
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native'
+import axios from 'axios'
 // import AsyncStorage from '../../node_modules/@react-native-community/async-storage';
-import * as SecureStore from 'expo-secure-store';
-import { useNavigation } from '@react-navigation/native';
-
+import * as SecureStore from 'expo-secure-store'
+import { useNavigation } from '@react-navigation/native'
 
 async function get(key) {
-  return await SecureStore.getItemAsync(key);
+  return await SecureStore.getItemAsync(key)
 }
-
 
 const ItemScreen = () => {
   const navigation = useNavigation();
 
   const handleScanItems = () => {
     // Navigate to the Scan Items page
-    navigation.navigate('ScanItem'); // Replace with the actual screen name
-  };
-  const [items, setItems] = useState([]);
+    navigation.navigate('ScanItem') // Replace with the actual screen name
+  }
+  const [items, setItems] = useState([])
 
   useEffect(() => {
-    fetchItems();
-  }, []);
+    fetchItems()
+  }, [])
 
   const decodeBase64Image = (base64Data) => {
-    return `data:image/png;base64,` + base64Data;
-  };
+    return `data:image/png;base64,` + base64Data
+  }
   const fetchItems = async () => {
     // const accessToken = await AsyncStorage.getItem('accessToken');
-    const accessToken = await get('accessToken');
+    const accessToken = await get('accessToken')
 
     try {
-      // use the access token 
+      // use the access token
       const response = await axios.get('https://vcloset.xyz/api/items', {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-      });
+      })
 
-      setItems(response.data);
+      setItems(response.data)
+
+      const bottoms = response.data.filter(
+        (x) => x.category.title === 'Bottoms'
+      )
+      const tops = response.data.filter((x) => x.category.title === 'Tops')
+
+      if (bottoms.length >= 3 && tops.length >= 3) {
+        await axios.get('https://vcloset.xyz/api/generateOutfitsAll', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        console.log('Success')
+      }
     } catch (error) {
-      console.error('Error fetching items:', error);
+      console.error('Error fetching items:', error)
     }
-  };
+  }
 
   const renderItem = ({ item }) => (
-
     // <View style={styles.itemContainer}>
     //   <Image style={styles.itemImage} source={{ uri: decodeBase64Image(item.image.blob) }} />
     //   <Text style={styles.itemName}>{item.name}</Text>
@@ -59,11 +77,13 @@ const ItemScreen = () => {
       navigation.navigate('ViewItem', { item_id: item.id });
     }}
   >
-    <Image style={styles.itemImage} source={{ uri: decodeBase64Image(item.image.blob) }} />
+    <Image
+        style={styles.itemImage}
+        source={{ uri: decodeBase64Image(item.image.blob) }}
+      />
     <Text style={styles.itemName}>{item.name}</Text>
   </TouchableOpacity>
-
-  );
+  )
 
   return (
     <View style={styles.container}>
@@ -85,10 +105,9 @@ const ItemScreen = () => {
           </TouchableOpacity>
         </View>
       )}
-
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -105,7 +124,7 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     width: '31%', // Each item takes up 33.33% of the container width
-    margin: 5,       // Adjust spacing as needed
+    margin: 5, // Adjust spacing as needed
     borderRadius: 5,
     backgroundColor: '#f0f0f0',
     alignItems: 'center',
@@ -130,9 +149,6 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 5,
   },
-});
+})
 
-
-
-
-export default ItemScreen;
+export default ItemScreen
