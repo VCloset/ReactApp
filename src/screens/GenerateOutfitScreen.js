@@ -84,8 +84,11 @@ const GenerateOutfitScreen = () => {
     }
   }
 
+
   const handleSaveOutfit = async () => {
     const accessToken = await SecureStore.getItemAsync('accessToken')
+    const closet_id = await SecureStore.getItemAsync('closet_id')
+    
     const axiosConfig = {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -93,13 +96,14 @@ const GenerateOutfitScreen = () => {
     }
     try {
       const requestBody = {
-        closet_id: 0,
-        items: [newOutfit.bottom, newOutfit.top],
+        closet_id: closet_id,
+        items: [newOutfit.top, newOutfit.bottom ],
         description: newOutfit.description,
-        tags: 1,
+        tags: [1],
         saved: true,
         liked: true,
       }
+      console.log('Request body:', requestBody)
 
       const response = await axios.post(
         'https://vcloset.xyz/api/outfits',
@@ -110,7 +114,7 @@ const GenerateOutfitScreen = () => {
         setSaved(true)
       }
     } catch (error) {
-      console.error('Error saving outfit:', error)
+      console.error('Error saving outfit:', error.response.data)
     }
   }
 

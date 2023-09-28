@@ -7,18 +7,24 @@ import HomeScreen from './src/screens/HomeScreen' // Import the HomeScreen compo
 import ItemScreen from './src/screens/ItemScreen' // Import the ItemScreen component
 import ScanItemScreen from './src/screens/ScanItemScreen' // Import the ScanItemScreen component
 import GenerateOutfitScreen from './src/screens/GenerateOutfitScreen' // Import the GenerateOutfitScreen component
+import ViewItemScreen from './src/screens/ViewItemScreen'
+import OutfitScreen from './src/screens/OutfitScreen'
 import * as SecureStore from 'expo-secure-store'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen'
+import { useNavigation } from '@react-navigation/native';
 
 const Stack = createStackNavigator()
 
 const App = () => {
+
   const [accessToken, setAccessToken] = useState('')
   // session ID is used to renew access token and is read only
   const [sessionID, setSessionID] = useState('')
   const [tokenExpiry, setTokenExpiry] = useState(0)
+
+  const [closet_id, setCloset_id] = useState('')
 
   async function getSessionID() {
     setSessionID(await SecureStore.getItemAsync('sessionId'))
@@ -27,12 +33,31 @@ const App = () => {
   const checkTokenExpiry = () => {
     const currentTime = Date.now() / 1000 // Convert to seconds
     if (tokenExpiry - currentTime < 300) {
-      console.log('Sess', sessionID)
       if (sessionID != '') {
         renewAccessToken()
       } else {
         getSessionID()
       }
+    }
+  }
+// {
+//   "id": 1,
+//   "owner_id": 1
+// }
+  const getClosetID = async () => {
+    const accessToken = await SecureStore.getItemAsync('accessToken')
+    try {
+      const response = await axios.get('https://vcloset.xyz/api/closets', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      console.log('Closet id:', response.data.id)
+      setCloset_id(response.data.id)
+      await SecureStore.setItemAsync('closet_id', response.data.id.toString())
+
+    } catch (error) {
+      console.error('Error fetching closet id:', error.response.data)
     }
   }
 
@@ -61,11 +86,17 @@ const App = () => {
       }
     } catch (error) {
       console.error('Error renewing token:', error)
+      // logout user
+      await SecureStore.deleteItemAsync('accessToken')
+      await SecureStore.deleteItemAsync('sessionId')
+      setAccessToken('')
+      setSessionID('')
     }
   }
 
   useEffect(() => {
     checkTokenExpiry()
+    getClosetID()
     const tokenRenewalInterval = setInterval(checkTokenExpiry, 60000) // Check every minute
     return () => clearInterval(tokenRenewalInterval)
   }, [])
@@ -80,6 +111,8 @@ const App = () => {
         <Stack.Screen name='ScanItem' component={ScanItemScreen} />
         <Stack.Screen name='GenerateOutfit' component={GenerateOutfitScreen} />
         <Stack.Screen name='ForgotPassword' component={ForgotPasswordScreen} />
+        <Stack.Screen name='ViewItem' component={ViewItemScreen} />
+        <Stack.Screen name='Outfit' component={OutfitScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   )

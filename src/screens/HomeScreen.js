@@ -4,6 +4,10 @@ import { useNavigation } from '@react-navigation/native';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
+  const handleSessionExpiry = () => {
+    // Navigate to the Login page
+    navigation.navigate('Login'); // Replace with the actual screen name
+  }
 
   const handleGenerateOutfit = () => {
     // Navigate to the Generate Outfit page
@@ -12,7 +16,7 @@ const HomeScreen = () => {
 
   const handleViewOutfit = () => {
     // Navigate to the View Outfit page
-    // navigation.navigate('ViewOutfit'); // Replace with the actual screen name
+    navigation.navigate('Outfit'); // Replace with the actual screen name
   };
 
   const handleViewItems = () => {

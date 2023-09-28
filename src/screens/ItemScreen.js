@@ -12,6 +12,7 @@ async function get(key) {
 
 
 const ItemScreen = () => {
+  const navigation = useNavigation();
 
   const handleScanItems = () => {
     // Navigate to the Scan Items page
@@ -46,10 +47,21 @@ const ItemScreen = () => {
 
   const renderItem = ({ item }) => (
 
-    <View style={styles.itemContainer}>
-      <Image style={styles.itemImage} source={{ uri: decodeBase64Image(item.image.blob) }} />
-      <Text style={styles.itemName}>{item.name}</Text>
-    </View>
+    // <View style={styles.itemContainer}>
+    //   <Image style={styles.itemImage} source={{ uri: decodeBase64Image(item.image.blob) }} />
+    //   <Text style={styles.itemName}>{item.name}</Text>
+    // </View>
+
+    <TouchableOpacity
+    style={styles.itemContainer}
+    onPress={() => {
+      // Navigate to ViewItemScreen and pass item_id as a parameter
+      navigation.navigate('ViewItem', { item_id: item.id });
+    }}
+  >
+    <Image style={styles.itemImage} source={{ uri: decodeBase64Image(item.image.blob) }} />
+    <Text style={styles.itemName}>{item.name}</Text>
+  </TouchableOpacity>
 
   );
 
