@@ -44,7 +44,7 @@ const LoginScreen = () => {
       setSessionId(session_id)
       await save('accessToken', access_token)
       await save('sessionId', session_id)
-      navigation.navigate('Home')
+      navigation.navigate("HomeLogin")
     } catch (error) {
       console.log('error: ', error)
       setError('Login failed. Please check your credentials.')

@@ -1,43 +1,30 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const handleSessionExpiry = () => {
-    // Navigate to the Login page
-    navigation.navigate('Login'); // Replace with the actual screen name
-  }
 
   const handleGenerateOutfit = () => {
-    // Navigate to the Generate Outfit page
     navigation.navigate('GenerateOutfit'); // Replace with the actual screen name
   };
 
   const handleViewOutfit = () => {
-    // Navigate to the View Outfit page
     navigation.navigate('Outfit'); // Replace with the actual screen name
   };
 
   const handleViewItems = () => {
-    // Navigate to the View Items page
     navigation.navigate('Item'); // Replace with the actual screen name
   };
 
   const handleScanItems = () => {
-    // Navigate to the Scan Items page
     navigation.navigate('ScanItem'); // Replace with the actual screen name
   };
 
-  // const handleTags = () => {
-    // Navigate to the Tags page
-    // navigation.navigate('Tag'); // Replace with the actual screen name
-  // };
   return (
-    
     <View style={styles.container}>
-
-      <Text style={styles.title}>Home Screen</Text>
+      <Text style={styles.title}>Welcome to V-Closet!</Text>
       <TouchableOpacity style={styles.button} onPress={handleGenerateOutfit}>
         <Text style={styles.buttonText}>Generate Outfit</Text>
       </TouchableOpacity>
@@ -50,9 +37,6 @@ const HomeScreen = () => {
       <TouchableOpacity style={styles.button} onPress={handleScanItems}>
         <Text style={styles.buttonText}>Scan Items</Text>
       </TouchableOpacity>
-      
-
-
     </View>
   );
 };
@@ -70,7 +54,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    // black color
     backgroundColor: '#000000',
     borderRadius: 5,
     paddingVertical: 10,
