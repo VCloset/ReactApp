@@ -91,7 +91,7 @@ const LoginScreen = () => {
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
       {/* Navigates to ForgotPasswordScreen */}
-      <Text style={{ color: 'blue' }} onPress={navigateForgotPassword}>
+      <Text style={{ color: 'blue', marginTop: 10 }} onPress={navigateForgotPassword}>
         Forgot Password
       </Text>
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
@@ -144,12 +144,14 @@ const styles = StyleSheet.create({
   },
   whiteButton: {
     // greyish white color
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#F9F9F9',
     borderRadius: 5,
-    paddingVertical: 15,
-    paddingHorizontal: 30,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     alignItems: 'center',
     marginTop: 10,
+    borderColor: '#000000',
+    borderWidth: 1,
   },
   buttonText: {
     color: 'black',
