@@ -149,6 +149,12 @@ const ScanItemScreen = () => {
         },
       });
       navigation.navigate('Home');
+      // clear 
+      setImage(null);
+      setCategory('');
+      setTags('');
+      setName('');
+      
     } catch (error) {
       console.error('Error adding item:', error);
     } finally {

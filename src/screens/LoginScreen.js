@@ -37,13 +37,13 @@ const LoginScreen = () => {
           Authorization: `Bearer ${access_Token}`,
         },
       })
-      console.log('Closet id:', response.data.id)
       setCloset_id(response.data.id)
       await SecureStore.setItemAsync('closet_id', response.data.id.toString())
     } catch (error) {
       console.error('Error fetching closet id:', error.response.data)
     }
   }
+
 
   const handleLogin = async () => {
     setLoading(true)
@@ -61,6 +61,8 @@ const LoginScreen = () => {
 
       const { access_token } = response.data
       const { session_id } = response.data
+
+      
       setAccessToken(access_token)
       setSessionId(session_id)
       await save('accessToken', access_token)

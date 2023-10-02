@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from 'react'
-import { NavigationContainer } from '@react-navigation/native'
-import { createStackNavigator } from '@react-navigation/stack'
-import LoginScreen from './src/screens/LoginScreen'
-import SignUpScreen from './src/screens/SignUpScreen'
-import HomeScreen from './src/screens/HomeScreen'
-import ItemScreen from './src/screens/ItemScreen'
-import ScanItemScreen from './src/screens/ScanItemScreen'
-import GenerateOutfitScreen from './src/screens/GenerateOutfitScreen'
-import ViewItemScreen from './src/screens/ViewItemScreen'
-import OutfitScreen from './src/screens/OutfitScreen'
-import ViewOutfitScreen from './src/screens/ViewOutfitScreen'
-import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen'
-import * as SecureStore from 'expo-secure-store'
-import axios from 'axios'
-import { createDrawerNavigator } from '@react-navigation/drawer'
-import UserProfile from './src/screens/UserProfile'
+import React, { useState, useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import LoginScreen from './src/screens/LoginScreen';
+import SignUpScreen from './src/screens/SignUpScreen';
+import HomeScreen from './src/screens/HomeScreen';
+import ItemScreen from './src/screens/ItemScreen';
+import ScanItemScreen from './src/screens/ScanItemScreen';
+import GenerateOutfitScreen from './src/screens/GenerateOutfitScreen';
+import ViewItemScreen from './src/screens/ViewItemScreen';
+import OutfitScreen from './src/screens/OutfitScreen';
+import ViewOutfitScreen from './src/screens/ViewOutfitScreen';
+import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
+import * as SecureStore from 'expo-secure-store';
+import axios from 'axios';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import UserProfile from './src/screens/UserProfile';
+import OutfitMatchingScreen from './src/screens/OutfitsMatchingScreen';
 
 const Stack = createStackNavigator()
 const Drawer = createDrawerNavigator()
@@ -96,11 +97,12 @@ const App = () => {
             headerShown: false, // Hide the header for the Home screen
           }}>
           {() => (
-            <Drawer.Navigator initialRouteName='Home'>
-              <Drawer.Screen name='User' component={UserProfile} />
-              <Drawer.Screen name='Home' component={HomeScreen} />
-              <Drawer.Screen name='Item' component={ItemScreen} />
-              <Drawer.Screen name='ScanItem' component={ScanItemScreen} />
+            <Drawer.Navigator initialRouteName="Home">
+              <Drawer.Screen name="User" component={UserProfile} />
+              <Drawer.Screen name="Home" component={HomeScreen} />
+              <Drawer.Screen name="Item" component={ItemScreen} />
+              <Drawer.Screen name="ScanItem" component={ScanItemScreen} />
+              <Drawer.Screen name="Outfits Matching" component={OutfitMatchingScreen} />
               <Drawer.Screen
                 name='GenerateOutfit'
                 component={GenerateOutfitScreen}
