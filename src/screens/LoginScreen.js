@@ -23,6 +23,27 @@ const LoginScreen = () => {
   const [sessionId, setSessionId] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [closet_id, setCloset_id] = useState('')
+
+  const getClosetID = async () => {
+    const access_Token = await SecureStore.getItemAsync('accessToken')
+
+    if (!access_Token) {
+      return
+    }
+    try {
+      const response = await axios.get('https://vcloset.xyz/api/closets', {
+        headers: {
+          Authorization: `Bearer ${access_Token}`,
+        },
+      })
+      console.log('Closet id:', response.data.id)
+      setCloset_id(response.data.id)
+      await SecureStore.setItemAsync('closet_id', response.data.id.toString())
+    } catch (error) {
+      console.error('Error fetching closet id:', error.response.data)
+    }
+  }
 
   const handleLogin = async () => {
     setLoading(true)
@@ -44,7 +65,8 @@ const LoginScreen = () => {
       setSessionId(session_id)
       await save('accessToken', access_token)
       await save('sessionId', session_id)
-      navigation.navigate("HomeLogin")
+      getClosetID()
+      navigation.navigate('HomeLogin')
     } catch (error) {
       console.log('error: ', error)
       setError('Login failed. Please check your credentials.')
@@ -91,7 +113,9 @@ const LoginScreen = () => {
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
       {/* Navigates to ForgotPasswordScreen */}
-      <Text style={{ color: 'blue', marginTop: 10 }} onPress={navigateForgotPassword}>
+      <Text
+        style={{ color: 'blue', marginTop: 10 }}
+        onPress={navigateForgotPassword}>
         Forgot Password
       </Text>
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
