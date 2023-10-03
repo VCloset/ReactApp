@@ -26,17 +26,39 @@ const OutfitScreen = () => {
           outfit.items.sort((a, b) => a.category_id - b.category_id);
         });
 
+        const getItems = async (outfit) => {
+          const itemsRes = await axios.get(`https://vcloset.xyz/api/items`, {
+            headers: {
+              Authorization: 'Bearer ' + accessToken,
+              accept: 'application/json',
+            },
+          });
+          return itemsRes.data;
+        };
+        const items = await getItems();
+        // const outfitsWithImages = await Promise.all(
+        //   savedOutfits.map(async (outfit) => {
+        //     const itemsWithImages = await Promise.all(
+        //       outfit.items.map(async (item) => {
+        //         const imageResponse = await axios.get(`https://vcloset.xyz/api/items/${item.id}/image`, {
+        //           headers: {
+        //             Authorization: 'Bearer ' + accessToken,
+        //             accept: 'application/json',
+        //           },
+        //         });
+        //         return { ...item, image: imageResponse.data.image };
+        //       })
+        //     );
+        //     return { ...outfit, items: itemsWithImages };
+        //   })
+        // );
+
         const outfitsWithImages = await Promise.all(
           savedOutfits.map(async (outfit) => {
             const itemsWithImages = await Promise.all(
               outfit.items.map(async (item) => {
-                const imageResponse = await axios.get(`https://vcloset.xyz/api/items/${item.id}/image`, {
-                  headers: {
-                    Authorization: 'Bearer ' + accessToken,
-                    accept: 'application/json',
-                  },
-                });
-                return { ...item, image: imageResponse.data.image };
+                const matchedItem = items.find((i) => i.id === item.id);
+                return { ...matchedItem, image: matchedItem.image.blob };
               })
             );
             return { ...outfit, items: itemsWithImages };
