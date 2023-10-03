@@ -3,75 +3,69 @@ import { View, Text, Image, StyleSheet, FlatList, ActivityIndicator, TouchableOp
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 
 const OutfitScreen = () => {
   const [outfits, setOutfits] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
-  useEffect(() => {
-    const fetchOutfits = async () => {
-      const accessToken = await SecureStore.getItemAsync('accessToken');
-      try {
-        const response = await axios.get('https://vcloset.xyz/api/outfits?skip=0&limit=100', {
+  const fetchOutfits = async () => {
+    const accessToken = await SecureStore.getItemAsync('accessToken');
+    try {
+      const response = await axios.get('https://vcloset.xyz/api/outfits?skip=0&limit=100', {
+        headers: {
+          Authorization: 'Bearer ' + accessToken,
+          accept: 'application/json',
+        },
+      });
+      const savedOutfits = response.data.filter((outfit) => outfit.saved === true);
+
+      // sort the items in each outfit by category_id
+      savedOutfits.forEach((outfit) => {
+        outfit.items.sort((a, b) => a.category_id - b.category_id);
+      });
+
+      const getItems = async (outfit) => {
+        const itemsRes = await axios.get(`https://vcloset.xyz/api/items`, {
           headers: {
             Authorization: 'Bearer ' + accessToken,
             accept: 'application/json',
           },
         });
-        const savedOutfits = response.data.filter((outfit) => outfit.saved === true);
+        return itemsRes.data;
+      };
+      const items = await getItems();
 
-        // sort the items in each outfit by category_id
-        savedOutfits.forEach((outfit) => {
-          outfit.items.sort((a, b) => a.category_id - b.category_id);
-        });
+      const outfitsWithImages = await Promise.all(
+        savedOutfits.map(async (outfit) => {
+          const itemsWithImages = await Promise.all(
+            outfit.items.map(async (item) => {
+              const matchedItem = items.find((i) => i.id === item.id);
+              return { ...matchedItem, image: matchedItem.image.blob };
+            })
+          );
+          return { ...outfit, items: itemsWithImages };
+        })
+      );
 
-        const getItems = async (outfit) => {
-          const itemsRes = await axios.get(`https://vcloset.xyz/api/items`, {
-            headers: {
-              Authorization: 'Bearer ' + accessToken,
-              accept: 'application/json',
-            },
-          });
-          return itemsRes.data;
-        };
-        const items = await getItems();
-        // const outfitsWithImages = await Promise.all(
-        //   savedOutfits.map(async (outfit) => {
-        //     const itemsWithImages = await Promise.all(
-        //       outfit.items.map(async (item) => {
-        //         const imageResponse = await axios.get(`https://vcloset.xyz/api/items/${item.id}/image`, {
-        //           headers: {
-        //             Authorization: 'Bearer ' + accessToken,
-        //             accept: 'application/json',
-        //           },
-        //         });
-        //         return { ...item, image: imageResponse.data.image };
-        //       })
-        //     );
-        //     return { ...outfit, items: itemsWithImages };
-        //   })
-        // );
+      setOutfits(outfitsWithImages);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching outfits:', error.response);
+      setLoading(false);
+    }
+  };
+  
+  useFocusEffect(
+    React.useCallback(() => {
+        fetchOutfits();
+    }, [])
+);
 
-        const outfitsWithImages = await Promise.all(
-          savedOutfits.map(async (outfit) => {
-            const itemsWithImages = await Promise.all(
-              outfit.items.map(async (item) => {
-                const matchedItem = items.find((i) => i.id === item.id);
-                return { ...matchedItem, image: matchedItem.image.blob };
-              })
-            );
-            return { ...outfit, items: itemsWithImages };
-          })
-        );
 
-        setOutfits(outfitsWithImages);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching outfits:', error.response);
-        setLoading(false);
-      }
-    };
+  useEffect(() => {
+    
 
     fetchOutfits();
   }, []);
