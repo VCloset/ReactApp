@@ -87,7 +87,7 @@ const ViewOutfitScreen = ({ route }) => {
           try {
             const accessToken = await SecureStore.getItemAsync('accessToken');
             const response = await axios.delete( // Use DELETE method
-              `https://vcloset.xyz/api/outfits/delete/${outfit.id}`,
+              `https://vcloset.xyz/api/outfits/${outfit.id}`,
               {
                 headers: {
                   Authorization: 'Bearer ' + accessToken,
@@ -100,6 +100,7 @@ const ViewOutfitScreen = ({ route }) => {
             if (response.status === 200) {
               // Successfully deleted
               // You can navigate the user back to the previous screen or perform other actions
+              navigation.navigate('OutfitScreen');
             } else {
               console.error('Unexpected response status:', response.status);
             }
