@@ -22,6 +22,10 @@ const HomeScreen = () => {
     navigation.navigate('ScanItem'); // Replace with the actual screen name
   };
 
+  const handleOutfitsMatching = () => {
+    navigation.navigate("Outfits Matching"); // Replace with the actual screen name
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to V-Closet!</Text>
@@ -36,6 +40,9 @@ const HomeScreen = () => {
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={handleScanItems}>
         <Text style={styles.buttonText}>Scan Items</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={handleOutfitsMatching}>
+        <Text style={styles.buttonText}>Outfits Matching</Text>
       </TouchableOpacity>
     </View>
   );
