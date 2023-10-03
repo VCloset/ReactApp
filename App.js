@@ -135,6 +135,7 @@ const App = () => {
           }}>
           {() => (
             <Drawer.Navigator initialRouteName="Home">
+            <Drawer.Screen name='Home' component={HomeScreen} />
             <Drawer.Screen
                 name='GenerateOutfit'
                 component={GenerateOutfitScreen}
