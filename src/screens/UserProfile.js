@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import { FontAwesome } from '@expo/vector-icons'; // You can import icons like this
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
+import { useFocusEffect } from '@react-navigation/native';
 
 function UserProfile() {
   const [userData, setUserData] = useState({
@@ -31,6 +32,13 @@ function UserProfile() {
       console.error('Error fetching user data:', error.response);
     }
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchUserData();
+    }, [])
+  );
+  
 
   const updateUserDetails = async () => {
     try {

@@ -20,6 +20,42 @@ import OutfitMatchingScreen from './src/screens/OutfitsMatchingScreen';
 const Stack = createStackNavigator()
 const Drawer = createDrawerNavigator()
 
+const Logout = ({navigation}) => {
+
+  const logout = async () => {
+    const session_ID = await SecureStore.getItemAsync('sessionId')
+    if (!session_ID) {
+      return
+    }
+    try {
+      const response = await axios.post(
+        'https://vcloset.xyz/logout?session_id=' + session_ID,
+      )
+      console.log('Logout response:', response.data)
+      await SecureStore.deleteItemAsync('accessToken')
+      await SecureStore.deleteItemAsync('sessionId')
+      await SecureStore.deleteItemAsync('closet_id')
+      navigation.navigate('Login')
+
+    } catch (error) {
+      console.error('Error logging out:', error.response.data)
+      await SecureStore.deleteItemAsync('accessToken')
+      await SecureStore.deleteItemAsync('sessionId')
+      await SecureStore.deleteItemAsync('closet_id')
+      navigation.navigate('Login')
+
+    }
+
+  }
+
+  useEffect(() => {
+    logout()
+  }
+  , [])
+  return null;
+}
+
+
 const App = () => {
   const [accessToken, setAccessToken] = useState('')
   const [sessionID, setSessionID] = useState('')
@@ -83,6 +119,7 @@ const App = () => {
     return () => clearInterval(tokenRenewalInterval)
   }, [])
 
+  
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName='Login'>
@@ -98,6 +135,8 @@ const App = () => {
           }}>
           {() => (
             <Drawer.Navigator initialRouteName="Home">
+              {/* logout  */}
+              <Drawer.Screen name="Logout" component={Logout} />
               <Drawer.Screen name="User" component={UserProfile} />
               <Drawer.Screen name="Home" component={HomeScreen} />
               <Drawer.Screen name="Item" component={ItemScreen} />

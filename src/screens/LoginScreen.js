@@ -10,7 +10,7 @@ import axios from 'axios'
 // import AsyncStorage from '../../node_modules/@react-native-community/async-storage';
 import * as SecureStore from 'expo-secure-store'
 import { useNavigation } from '@react-navigation/native'
-
+import { useFocusEffect } from '@react-navigation/native';
 async function save(key, value) {
   await SecureStore.setItemAsync(key, value)
 }
@@ -24,6 +24,8 @@ const LoginScreen = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [closet_id, setCloset_id] = useState('')
+
+  
 
   const getClosetID = async () => {
     const access_Token = await SecureStore.getItemAsync('accessToken')
@@ -43,6 +45,9 @@ const LoginScreen = () => {
       console.error('Error fetching closet id:', error.response.data)
     }
   }
+
+
+  
 
 
   const handleLogin = async () => {

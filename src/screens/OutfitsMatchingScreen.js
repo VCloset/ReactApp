@@ -4,14 +4,23 @@ import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import axios from 'axios';
 import OutfitCard from './OutfitCard';
 import * as SecureStore from 'expo-secure-store';
+import { useFocusEffect } from '@react-navigation/native';
 
 const windowWidth = Dimensions.get('window').width;
 
 const OutfitMatchingScreen = () => {
+
   const [outfits, setOutfits] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [accessToken, setAccessToken] = useState('');
   const [loading, setLoading] = useState(true);
+
+
+  useFocusEffect(
+    React.useCallback(() => {
+        fetchOutfits();
+    }, [])
+);
 
   const translateX = useRef(new Animated.Value(0)).current;
   const panGestureRef = useRef(null);
@@ -76,8 +85,13 @@ const OutfitMatchingScreen = () => {
   };
 
   useEffect(() => {
+    // refetch outfits when the screen is focused
+      
+    
     fetchOutfits();
   }, []);
+
+  
 
   const handleLike = async () => {
     if (currentIndex < outfits.length) {
@@ -104,7 +118,7 @@ const OutfitMatchingScreen = () => {
                 },
             }
         );
-        
+
         // You can trigger a swipe animation here
         panGestureRef.current.setNativeProps({
           gestureEnabled: false,

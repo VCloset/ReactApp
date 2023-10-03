@@ -375,6 +375,8 @@ import {
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
+import { Alert } from 'react-native';
 
 async function get(key) {
   return await SecureStore.getItemAsync(key);
@@ -402,12 +404,36 @@ const ItemScreen = () => {
     fetchItems();
   }, []);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchItems();
+    }, [])
+  );
+
   useEffect(() => {
     if (bottomsCount >= 3 && topsCount >= 3) {
       // Call the API only when the conditions are met
       generateOutfits();
     }
   }, [bottomsCount, topsCount]);
+
+  const deleteItem = async (itemId) => {
+    const accessToken = await get('accessToken');
+  
+    try {
+      await axios.delete(`https://vcloset.xyz/api/items/${itemId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+  
+      // Refresh the list of items after deleting
+      fetchItems();
+    } catch (error) {
+      console.error('Error deleting item:', error);
+    }
+  };
+  
 
   const decodeBase64Image = (base64Data) => {
     return `data:image/png;base64,` + base64Data;
@@ -483,6 +509,33 @@ const ItemScreen = () => {
         },
       ]}
     >
+      <TouchableOpacity
+      style={styles.editButton}
+      onPress={() => {
+        // Show a confirmation dialog
+        Alert.alert(
+          'Delete Item',
+          'Are you sure you want to delete this item?',
+          [
+            {
+              text: 'Cancel',
+              style: 'cancel',
+            },
+            {
+              text: 'Delete',
+              onPress: async () => {
+                // Perform the delete operation
+                await deleteItem(item.id);
+              },
+              style: 'destructive',
+            },
+          ],
+          { cancelable: false }
+        );
+      }}
+    >
+      <Text style={styles.editButtonText}>✖️</Text>
+    </TouchableOpacity>
     <TouchableOpacity onPress={() => {
         navigation.navigate('ViewItem', { item_id: item.id });
       }}
@@ -496,6 +549,8 @@ const ItemScreen = () => {
       />
       <Text style={styles.itemName}>{item.name}</Text>
       </TouchableOpacity>
+      {/* Edit Button */}
+  
     </Animated.View>
   );
 
@@ -580,6 +635,15 @@ const styles = StyleSheet.create({
     // width: '100%',
     // height: 160,
     
+  },
+  editButton : {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    backgroundColor: '#FF6B6B', // Coral button background color
+    padding: 2,
+    borderRadius: 30,
+    zIndex: 1,
   },
 });
 

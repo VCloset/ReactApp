@@ -114,6 +114,7 @@ const ScanItemScreen = () => {
 
 
   const handleAddItem = async () => {
+
     setLoading(true);
     const accessToken = await SecureStore.getItemAsync('accessToken');
     try {
@@ -121,7 +122,6 @@ const ScanItemScreen = () => {
       const response = await fetch(image);
       const blob = await response.blob();
       const base64String = await blobToBase64(blob);
-
 
 
       const formData = new FormData();
@@ -136,7 +136,7 @@ const ScanItemScreen = () => {
 
       // const tagsArray = tags.split(',').map(tag => parseInt(tag));
       const array = []
-      array.push(parseInt(tags))
+      array.push(1);
       formData.append('tags', array);
 
       formData.append('description', 'Image -');
@@ -189,21 +189,17 @@ const ScanItemScreen = () => {
         </TouchableOpacity>
       )}
 
+        {/* empty the fields on submit */}
       <TextInput style={styles.input} placeholder="Name" onChangeText={(text) => setName(text)} />
-      <TextInput style={styles.input} placeholder="Tags" onChangeText={(text) => setTags(text)} />
+      {/* <TextInput style={styles.input} placeholder="Tags" onChangeText={(text) => setTags(text)} /> */}
       <SelectList
         style={styles.list}
         setSelected={(val) => setCategory(val)}
         data={categories}
         save="key"
+        autosize={false}
       />
 
-      {/* Display selected category and tags */}
-      <Text style={styles.label}>Selected Category:</Text>
-      <Text style={styles.text}>{category}</Text>
-
-      <Text style={styles.label}>Tags:</Text>
-      <Text style={styles.text}>{tags}</Text>
 
       {/* Add Item button */}
       <Button title="Add Item" onPress={handleAddItem} />
@@ -214,7 +210,8 @@ const ScanItemScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 0.5,
+    marginTop: 40,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 16,
@@ -270,6 +267,7 @@ const styles = StyleSheet.create({
     height: 50,
     zIndex:999,
     // top: 40,
+    marginTop: 40,
   }
 });
 
