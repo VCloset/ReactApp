@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react';
 import { Alert } from 'react-native'; // Import Alert from react-native
 
 const ViewOutfitScreen = ({ route }) => {
+  const navigation = useNavigation();
   const { outfit } = route.params;
   const [isLiked, setIsLiked] = useState(outfit.liked);
   const handleLike = async () => {
@@ -100,12 +101,14 @@ const ViewOutfitScreen = ({ route }) => {
             if (response.status === 200) {
               // Successfully deleted
               // You can navigate the user back to the previous screen or perform other actions
-              navigation.navigate('OutfitScreen');
+              navigation.navigate('Outfit');
             } else {
               console.error('Unexpected response status:', response.status);
+              navigation.navigate('Outfit');
             }
           } catch (error) {
-            console.error('Error deleting outfit:', error.response);
+            console.error('Error deleting outfit:', error.response.data);
+            navigation.navigate('Outfit');
           }
         },
       },
