@@ -135,19 +135,27 @@ const App = () => {
           }}>
           {() => (
             <Drawer.Navigator initialRouteName="Home">
-              {/* logout  */}
-              <Drawer.Screen name="Logout" component={Logout} />
-              <Drawer.Screen name="User" component={UserProfile} />
-              <Drawer.Screen name="Home" component={HomeScreen} />
-              <Drawer.Screen name="Item" component={ItemScreen} />
-              <Drawer.Screen name="ScanItem" component={ScanItemScreen} />
-              <Drawer.Screen name="Outfits Matching" component={OutfitMatchingScreen} />
-              <Drawer.Screen
+            <Drawer.Screen name='Home' component={HomeScreen} />
+            <Drawer.Screen
                 name='GenerateOutfit'
                 component={GenerateOutfitScreen}
-              />
+                options={{ title: 'Generate Outfit' }} 
+            />
+            <Drawer.Screen 
+              name='Outfit' component={OutfitScreen} 
+              options={{ title: 'View Outfits' }} />
+            <Drawer.Screen 
+              name='Item' component={ItemScreen} 
+              options={{ title: 'View Items' }} />
+            <Drawer.Screen 
+              name='ScanItem' component={ScanItemScreen} 
+              options={{ title: 'Scan Item' }} />
 
-              <Drawer.Screen name='Outfit' component={OutfitScreen} />
+            <Drawer.Screen name="Outfits Matching" component={OutfitMatchingScreen} />
+            <Drawer.Screen 
+              name='User' component={UserProfile} 
+              options={{ title: 'User Profile' }} />
+            <Drawer.Screen name="Logout" component={Logout} />            
             </Drawer.Navigator>
           )}
         </Stack.Screen>

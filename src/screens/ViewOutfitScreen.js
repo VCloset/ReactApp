@@ -11,6 +11,7 @@ import { Alert } from 'react-native'; // Import Alert from react-native
 const ViewOutfitScreen = ({ route }) => {
   const navigation = useNavigation();
   const { outfit } = route.params;
+  const navigation = useNavigation();
   const [isLiked, setIsLiked] = useState(outfit.liked);
   const handleLike = async () => {
     // get the access token
