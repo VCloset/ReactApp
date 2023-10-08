@@ -16,6 +16,9 @@ import axios from 'axios';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import UserProfile from './src/screens/UserProfile';
 import OutfitMatchingScreen from './src/screens/OutfitsMatchingScreen';
+import ShareHomeScreen from './src/screens/ShareHomeScreen';
+import ViewSharedClosets from './src/screens/ViewSharedClosets';
+import SharedClosetHomeScreen from './src/screens/SharedClosetHomeScreen';
 
 const Stack = createStackNavigator()
 const Drawer = createDrawerNavigator()
@@ -68,7 +71,7 @@ const App = () => {
   const checkTokenExpiry = () => {
     const currentTime = Date.now() / 1000 // Convert to seconds
     if (tokenExpiry - currentTime < 300) {
-      if (sessionID !== '') {
+      if (sessionID !== '' && !sessionID) {
         renewAccessToken()
       } else {
         getSessionID()
@@ -128,6 +131,7 @@ const App = () => {
         <Stack.Screen name='ForgotPassword' component={ForgotPasswordScreen} />
         <Stack.Screen name='ViewItem' component={ViewItemScreen} />
         <Stack.Screen name='ViewOutfit' component={ViewOutfitScreen} />
+        <Stack.Screen name='Shared Closet Home' component={SharedClosetHomeScreen} />
         <Stack.Screen
           name='HomeLogin'
           options={{
@@ -152,6 +156,8 @@ const App = () => {
               options={{ title: 'Scan Item' }} />
 
             <Drawer.Screen name="Outfits Matching" component={OutfitMatchingScreen} />
+            <Drawer.Screen name="Share Closet" component={ShareHomeScreen} />
+            <Drawer.Screen name="Shared Closets" component={ViewSharedClosets} />
             <Drawer.Screen 
               name='User' component={UserProfile} 
               options={{ title: 'User Profile' }} />
