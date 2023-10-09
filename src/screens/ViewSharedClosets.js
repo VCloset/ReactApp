@@ -46,13 +46,15 @@ const ViewSharedClosets = () => {
   const renderClosetItem = ({ item }) => (
     <TouchableOpacity onPress={() => handleClosetSelect(item)}>
       <View style={styles.closetItem}>
-        <Text style={styles.closetName}>{`${item.first_name}'s Closet`}</Text>
+        <Text style={styles.closetName}>{`${item.user_id} - ${item.first_name}'s Closet`}</Text>
       </View>
     </TouchableOpacity>
   );
 
   const handleClosetSelect = async (closet) => {
-    await SecureStore.setItemAsync('shared_closet_id', closet.id.toString());
+    await SecureStore.setItemAsync('shared_closet_id', closet.closet_id.toString());
+
+    // const test = await SecureStore.getItemAsync('shared_closet_id');
     // setSelectedCloset(closet);
     navigation.navigate('Shared Closet Home');
   };
