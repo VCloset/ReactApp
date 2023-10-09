@@ -11,6 +11,7 @@ import {
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 
 const ViewSharedClosets = () => {
   const navigation = useNavigation();
@@ -22,6 +23,15 @@ const ViewSharedClosets = () => {
   useEffect(() => {
     getSharedClosets();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getSharedClosets();
+    }, [])
+  );
+  
+
+
 
   const getSharedClosets = async () => {
     setLoading(true);
