@@ -107,8 +107,9 @@ const App = () => {
         console.log('Access token renewed')
       }
     } catch (error) {
-      console.error('Error renewing token:', error)
       // Logout user
+      // take the user back to the login screen
+      navigation.navigate('Login')
       await SecureStore.deleteItemAsync('accessToken')
       await SecureStore.deleteItemAsync('sessionId')
       setAccessToken('')
@@ -127,9 +128,10 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName='Login'>
-        <Stack.Screen name='Login' component={LoginScreen} />
-        <Stack.Screen name='SignUp' component={SignUpScreen} />
-        <Stack.Screen name='ForgotPassword' component={ForgotPasswordScreen} />
+        <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
+        {/* make the header background clear and the text 333333 */}
+        <Stack.Screen name='SignUp' component={SignUpScreen} options={{ title:'', headerStyle: { backgroundColor: 'transparent' }, headerTransparent: true, headerTintColor: '#333333' }} />
+        <Stack.Screen name='ForgotPassword' component={ForgotPasswordScreen} options={{ title:'', headerStyle: { backgroundColor: 'transparent' }, headerTransparent: true, headerTintColor: '#333333' }} />
         <Stack.Screen name='ViewItem' component={ViewItemScreen} />
         <Stack.Screen name='ViewOutfit' component={ViewOutfitScreen} />
         <Stack.Screen name='Shared Closet Home' component={SharedClosetHomeScreen} />
@@ -140,8 +142,8 @@ const App = () => {
             headerShown: false, // Hide the header for the Home screen
           }}>
           {() => (
-            <Drawer.Navigator initialRouteName="Home">
-            <Drawer.Screen name='Home' component={HomeScreen} />
+            <Drawer.Navigator initialRouteName="Item">
+            {/* <Drawer.Screen name='Home' component={HomeScreen} options={{ title:'Home', headerStyle: { backgroundColor: 'transparent' }, headerTransparent: true, headerTintColor: '#333333' }} /> */}
             <Drawer.Screen
                 name='GenerateOutfit'
                 component={GenerateOutfitScreen}
@@ -152,7 +154,7 @@ const App = () => {
               options={{ title: 'View Outfits' }} />
             <Drawer.Screen 
               name='Item' component={ItemScreen} 
-              options={{ title: 'View Items' }} />
+              options={{ title: 'My Collection' , headerStyle: { backgroundColor: '#FF6B6B' },  headerTintColor: 'white' , headerTransparent: false}} />
             <Drawer.Screen 
               name='ScanItem' component={ScanItemScreen} 
               options={{ title: 'Scan Item' }} />

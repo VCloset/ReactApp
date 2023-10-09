@@ -4,6 +4,7 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
+import  ImagesLoading  from './components/ImagesLoading';
 
 const OutfitScreen = () => {
   const [outfits, setOutfits] = useState([]);
@@ -98,7 +99,8 @@ const OutfitScreen = () => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        {/* <ActivityIndicator size="large" color="#0000ff" /> */}
+        <ImagesLoading />
       </View>
     );
   }

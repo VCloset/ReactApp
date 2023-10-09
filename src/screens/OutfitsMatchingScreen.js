@@ -5,22 +5,42 @@ import axios from 'axios';
 import OutfitCard from './OutfitCard';
 import * as SecureStore from 'expo-secure-store';
 import { useFocusEffect } from '@react-navigation/native';
+import ImagesLoading from './components/ImagesLoading';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { AntDesign } from '@expo/vector-icons';
 
 const windowWidth = Dimensions.get('window').width;
 
-const OutfitMatchingScreen = () => {
+const colors = {
+  backgroundStart: '#FFF5E1',
+  backgroundEnd: '#FFDDC1',
+  primaryText: '#333333',
+  inputBackground: '#FFFFFF',
+  inputBorder: '#FFC857',
+  buttonBackground: '#FF5733',
+  buttonText: '#FFFFFF',
+  errorText: '#FF6B6B',
+  cardBackground: '#FFAB79',
+};
 
+const OutfitMatchingScreen = () => {
   const [outfits, setOutfits] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [accessToken, setAccessToken] = useState('');
   const [loading, setLoading] = useState(true);
 
-
   useFocusEffect(
     React.useCallback(() => {
-        fetchOutfits();
+      fetchOutfits();
     }, [])
-);
+  );
+
+  const handleRefresh = () => {
+    console.log('Refreshing outfits...');
+    setLoading(true); // Set loading to true to show loading indicator
+    setOutfits([]); // Clear outfits
+    fetchOutfits(); // Fetch outfits again
+  };
 
   const translateX = useRef(new Animated.Value(0)).current;
   const panGestureRef = useRef(null);
@@ -29,8 +49,7 @@ const OutfitMatchingScreen = () => {
     inputRange: [-windowWidth / 2, 0, windowWidth / 2],
     outputRange: ['-30deg', '0deg', '30deg'],
     extrapolate: 'clamp',
-    });
-
+  });
 
   const fetchOutfits = async () => {
     try {
@@ -86,12 +105,8 @@ const OutfitMatchingScreen = () => {
 
   useEffect(() => {
     // refetch outfits when the screen is focused
-      
-    
     fetchOutfits();
   }, []);
-
-  
 
   const handleLike = async () => {
     if (currentIndex < outfits.length) {
@@ -109,14 +124,14 @@ const OutfitMatchingScreen = () => {
         );
 
         await axios.put(
-            `https://vcloset.xyz/api/outfits/save/${outfitId}`,
-            {},
-            {
-                headers: {
-                    Authorization: 'Bearer ' + accessToken,
-                    accept: 'application/json',
-                },
-            }
+          `https://vcloset.xyz/api/outfits/save/${outfitId}`,
+          {},
+          {
+            headers: {
+              Authorization: 'Bearer ' + accessToken,
+              accept: 'application/json',
+            },
+          }
         );
 
         // You can trigger a swipe animation here
@@ -174,15 +189,16 @@ const OutfitMatchingScreen = () => {
         toValue: 0,
         duration: 300, // You can adjust the animation duration as needed
         useNativeDriver: false,
-      }).start(() => {
-      });
+      }).start(() => {});
     }
   };
 
+  
   return (
     <View style={styles.container}>
+      
       {loading ? (
-        <ActivityIndicator size="large" color="blue" />
+        <ImagesLoading />
       ) : outfits.length > 0 && currentIndex < outfits.length ? (
         <PanGestureHandler
           ref={panGestureRef}
@@ -194,9 +210,7 @@ const OutfitMatchingScreen = () => {
             style={[
               styles.swipeContainer,
               {
-                transform: [{ translateX: translateX },
-                {rotate : rotate},
-                ],
+                transform: [{ translateX: translateX }, { rotate: rotate }],
               },
             ]}
           >
@@ -204,7 +218,14 @@ const OutfitMatchingScreen = () => {
           </Animated.View>
         </PanGestureHandler>
       ) : (
-        <Text styles = {styles.text}>No more outfits to show!</Text>
+        <View>
+        <TouchableOpacity style={styles.refreshButton} onPress={handleRefresh}>
+        {/* Use the refresh icon */}
+        <AntDesign name="reload1" size={24} color="white" />
+      </TouchableOpacity>
+        <Text style={styles.text}>No more fashionable outfits left!</Text>
+        
+        </View>
       )}
     </View>
   );
@@ -213,6 +234,7 @@ const OutfitMatchingScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.backgroundStart,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -221,11 +243,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
-text: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
+  refreshButton: {
+    position: 'absolute',
+    top: 40, // Adjust the top position as needed
+    right: 20, // Adjust the right position as needed
+    backgroundColor: colors.buttonBackground,
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.primaryText,
+  },
 });
 
 export default OutfitMatchingScreen;

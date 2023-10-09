@@ -78,6 +78,7 @@ const ShareHomeScreen = () => {
   const handleSubmit = async () => {
     // Make a post request with the message and other data
     try {
+      setLoading(true);
       const access_token = await SecureStore.getItemAsync('accessToken');
       const closet_id = await SecureStore.getItemAsync('closet_id');
       const closetShareData = {
@@ -111,7 +112,9 @@ const ShareHomeScreen = () => {
       setModalVisible(false);
       setMessage('');
       setSelectedUser(null);
+      setLoading(false);
     } catch (err) {
+      setLoading(false);
       // Handle error
       console.error('Error sending share request:', err.message);
       // show the error to the user
@@ -140,22 +143,25 @@ const ShareHomeScreen = () => {
       {loading && <ActivityIndicator size="large" color="#000000" />}
       {error && <Text style={styles.errorText}>{error}</Text>}
 
-      <FlatList
-        data={users}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.userItem}
-            onPress={() => handleUserSelect(item)}
-          >
-            <Image
-              source={{ uri: item.image }}
-              style={styles.userImage}
-            />
-            <Text style={styles.username}>{item.username}</Text>
-          </TouchableOpacity>
-        )}
-      />
+      {searchQuery.trim() ? ( // Render the FlatList only when searchQuery is not empty
+        <FlatList
+          data={users}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.userItem}
+              onPress={() => handleUserSelect(item)}
+            >
+              <Image
+                source={{ uri: item.image }}
+                style={styles.userImage}
+              />
+              <Text style={styles.username}>{item.username}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      ) : null}
+
       <Modal visible={isModalVisible} backdropOpacity={0.5} animationType="slide" style={styles.modalContainer} transparent={true}>
         <View style={styles.modalView}>
           <Text style={styles.modalTitle}>Send a Message</Text>

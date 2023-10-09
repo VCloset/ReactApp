@@ -14,6 +14,12 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { useFocusEffect } from '@react-navigation/native';
 
+const colors = {
+  primary: '#007AFF',
+  background: '#F7F7F7',
+  text: '#333',
+};
+
 function UserProfile() {
   const [userData, setUserData] = useState({
     id: null,
@@ -40,8 +46,6 @@ function UserProfile() {
       });
       setUserData(response.data[0]);
       setInitialUserData(response.data[0]);
-      // if image doesnt contains data:image/jpeg;base64,
-      // add it before setting the image
       if (!response.data[0].image.includes('data:image/jpeg;base64,')) {
         response.data[0].image = `data:image/jpeg;base64,${response.data[0].image}`;
       }
@@ -86,8 +90,7 @@ function UserProfile() {
   const cancelEditing = () => {
     setUserData(initialUserData);
     setIsEditing(false);
-    setSelectedImage(null);
-    setBase64Image('');
+    setSelectedImage(userData.image);
   };
 
   const openImagePicker = () => {
@@ -113,6 +116,7 @@ function UserProfile() {
   };
 
   const pickImageFromCamera = async () => {
+    setIsEditing(true)
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
 
     if (permissionResult.granted === false) {
@@ -129,6 +133,7 @@ function UserProfile() {
   };
 
   const pickImageFromLibrary = async () => {
+    setIsEditing(true)
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
@@ -150,7 +155,6 @@ function UserProfile() {
 
     const reader = new FileReader();
     reader.onload = () => {
-      // remove prefix such as `data:image/jpg;base64,`
       setBase64Image(reader.result);
     };
 
@@ -160,19 +164,20 @@ function UserProfile() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        <TouchableOpacity onPress={openImagePicker}>
-          {selectedImage ? (
-            <Image
-              source={{ uri: selectedImage }}
-              style={styles.profile}
-              resizeMode="contain"
-            />
-          ) : (
-            <Text>Select an image</Text>
-          )}
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity onPress={openImagePicker} style={styles.imageContainer}>
+        {selectedImage ? (
+          <Image
+            source={{ uri: selectedImage }}
+            style={styles.profileImage}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={styles.placeholderImage}>
+            <FontAwesome name="camera" size={40} color={colors.primary} />
+            <Text style={styles.placeholderText}>Select an image</Text>
+          </View>
+        )}
+      </TouchableOpacity>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Username:</Text>
         <TextInput
@@ -206,13 +211,13 @@ function UserProfile() {
       <View style={styles.buttonContainer}>
         {isEditing ? (
           <>
-            <TouchableOpacity style={styles.button} onPress={updateUserDetails}>
+            <TouchableOpacity style={styles.saveButton} onPress={updateUserDetails}>
               <Text style={styles.buttonText}>Save</Text>
-              <FontAwesome name="check-circle" size={24} color="#fff" />
+              <FontAwesome name="check-circle" size={20} color="#fff" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={cancelEditing}>
+            <TouchableOpacity style={styles.cancelButton} onPress={cancelEditing}>
               <Text style={styles.buttonText}>Cancel</Text>
-              <FontAwesome name="times-circle" size={24} color="#fff" />
+              <FontAwesome name="times-circle" size={20} color="#fff" />
             </TouchableOpacity>
           </>
         ) : (
@@ -221,7 +226,7 @@ function UserProfile() {
             onPress={() => setIsEditing(true)}
           >
             <Text style={styles.buttonText}>Edit</Text>
-            <FontAwesome name="pencil" size={24} color="#fff" />
+            <FontAwesome name="pencil" size={20} color="#fff" />
           </TouchableOpacity>
         )}
       </View>
@@ -233,19 +238,33 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#F7F7F7',
+    backgroundColor: colors.background,
   },
-  profile: {
-    width: '100%',
+  imageContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  profileImage: {
+    width: 150,
     height: 150,
-    borderRadius: 50,
-    marginBottom: 10,
-    alignContent: 'center',
+    borderRadius: 75,
+  },
+  placeholderImage: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: '#eee',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeholderText: {
+    marginTop: 10,
+    color: colors.primary,
   },
   label: {
     fontSize: 16,
     marginBottom: 5,
-    color: '#333',
+    color: colors.text,
   },
   inputContainer: {
     marginBottom: 15,
@@ -266,21 +285,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.primary,
     borderRadius: 5,
     paddingVertical: 10,
     flex: 1,
     marginRight: 5,
   },
-  button: {
+  saveButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.primary,
     borderRadius: 5,
     paddingVertical: 10,
     flex: 1,
     marginRight: 5,
+  },
+  cancelButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FF6347',
+    borderRadius: 5,
+    paddingVertical: 10,
+    flex: 1,
   },
   buttonText: {
     fontSize: 16,
@@ -291,4 +319,3 @@ const styles = StyleSheet.create({
 });
 
 export default UserProfile;
-
