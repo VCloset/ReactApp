@@ -107,7 +107,7 @@ const LoginScreen = () => {
         placeholder='Email Address'
         autoCapitalize='none'
         value={username}
-        onChangeText={(text) => setUsername(text)}
+        onChangeText={(text) => setUsername(text.toLowerCase())}
       />
       <TextInput
         style={styles.input}

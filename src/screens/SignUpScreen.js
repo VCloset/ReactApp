@@ -35,38 +35,63 @@ const SignUpScreen = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSignUp = async () => {
-    setLoading(true);
-    setError('');
 
-    try {
+  const isValidEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+};
+
+const isValidPassword = (password) => {
+  const regex = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+)(?=.*[0-9])(?=.*[a-z]).{8,}$/;
+  return regex.test(password);
+};
+
+
+
+const handleSignUp = async () => {
+  setLoading(true);
+  setError('');
+
+  try {
+      if (!isValidEmail(username)) {
+          setError('Please enter a valid email address.');
+          return;
+      }
+
+      if (!isValidPassword(password)) {
+          setError('Password should be at least 8 characters long, contain 1 uppercase letter, 1 special character, and 1 number.');
+          return;
+      }
+
       if (password !== confirmPassword) {
-        setError('Passwords do not match.');
-        return;
+          setError('Passwords do not match.');
+          return;
       }
 
       if (!username || !firstName || !lastName || !password) {
-        setError('Please fill in all fields.');
-        return;
+          setError('Please fill in all fields.');
+          return;
       }
 
       const json = {
-        username: username,
-        first_name: firstName,
-        last_name: lastName,
-        hashed_password: password,
+          username: username,
+          first_name: firstName,
+          last_name: lastName,
+          hashed_password: password,
       };
 
       const response = await axios.post('https://vcloset.xyz/signup', json);
 
       alert('Sign up successful! Please log in.');
       navigation.navigate('Login');
-    } catch (error) {
+  } catch (error) {
       setError('Sign-up failed. Please try again.');
-    } finally {
+  } finally {
       setLoading(false);
-    }
-  };
+  }
+};
+
+
 
   return (
     <LinearGradient
@@ -85,7 +110,7 @@ const SignUpScreen = () => {
           placeholder='Email Address'
           autoCapitalize='none'
           value={username}
-          onChangeText={(text) => setUsername(text)}
+          onChangeText={(text) => setUsername(text.toLowerCase())}
         />
         <TextInput
           style={styles.input}

@@ -148,7 +148,7 @@ const ScanItemScreen = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      navigation.navigate('Home');
+      navigation.navigate('Item');
       // clear 
       setImage(null);
       setCategory('');
