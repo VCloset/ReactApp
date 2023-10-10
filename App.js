@@ -16,6 +16,8 @@ import axios from 'axios';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import UserProfile from './src/screens/UserProfile';
 import OutfitMatchingScreen from './src/screens/OutfitsMatchingScreen';
+import UpdatePassword from './src/screens/UpdatePassword';
+
 
 const Stack = createStackNavigator()
 const Drawer = createDrawerNavigator()
@@ -64,6 +66,9 @@ const App = () => {
   async function getSessionID() {
     setSessionID(await SecureStore.getItemAsync('sessionId'))
   }
+  const Stack = createStackNavigator();
+
+
 
   const checkTokenExpiry = () => {
     const currentTime = Date.now() / 1000 // Convert to seconds
@@ -128,8 +133,9 @@ const App = () => {
         <Stack.Screen name='ForgotPassword' component={ForgotPasswordScreen} />
         <Stack.Screen name='ViewItem' component={ViewItemScreen} />
         <Stack.Screen name='ViewOutfit' component={ViewOutfitScreen} />
-        <Stack.Screen
-          name='HomeLogin'
+        <Stack.Screen name= 'UpdatePassword' component={UpdatePassword} />
+        <Stack.Screen 
+        name='HomeLogin'
           options={{
             headerShown: false, // Hide the header for the Home screen
           }}>

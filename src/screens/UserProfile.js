@@ -1,202 +1,4 @@
-// import React, { useState, useEffect } from 'react';
-// import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
-// import { FontAwesome } from '@expo/vector-icons'; // You can import icons like this
-// import axios from 'axios';
-// import * as SecureStore from 'expo-secure-store';
-// import { useFocusEffect } from '@react-navigation/native';
 
-// function UserProfile() {
-//   const [userData, setUserData] = useState({
-//     id: null,
-//     first_name: '',
-//     last_name: '',
-//     username: '',
-//     image: '',
-//   });
-
-//   const [initialUserData, setInitialUserData] = useState({}); // Store initial user data
-//   const [isEditing, setIsEditing] = useState(false);
-
-//   const fetchUserData = async () => {
-//     const accessToken = await SecureStore.getItemAsync('accessToken');
-//     const user_id = 3;
-
-//     try {
-//       const response = await axios.get(`https://vcloset.xyz/api/users/${user_id}`, {
-//         headers: {
-//           Authorization: `Bearer ${accessToken}`,
-//         },
-//       });
-//       console.log('User data:', response.data[0]);
-//       setUserData(response.data[0]);
-//       setInitialUserData(response.data[0]); // Store initial user data
-//     } catch (error) {
-//       console.error('Error fetching user data:', error.response);
-//     }
-//   };
-
-//   useFocusEffect(
-//     React.useCallback(() => {
-//       fetchUserData();
-//     }, [])
-//   );
-  
-
-//   const updateUserDetails = async () => {
-//     try {
-//       const accessToken = await SecureStore.getItemAsync('accessToken');
-//       const user_id = userData.id;
-
-//       const response = await axios.put(`https://vcloset.xyz/api/users/${user_id}`, userData, {
-//         headers: {
-//           Authorization: `Bearer ${accessToken}`,
-//         },
-//       });
-
-//       console.log('User details updated:', response.data);
-//       setIsEditing(false);
-//     } catch (error) {
-//       console.error('Error updating user details:', error.response.data);
-//     }
-//   };
-
-  
-
-//   const cancelEditing = () => {
-//     setUserData(initialUserData); // Restore initial user data
-//     setIsEditing(false);
-//   };
-
-//   useEffect(() => {
-//     fetchUserData();
-//   }, []);
-
-//   return (
-//     <View style={styles.container}>
-//       <View style={styles.inputContainer}>
-//       <Image source={{ uri: 'data:image/jpeg;base64,' + userData.image }} style={styles.profile} resizeMode='contain' />
-//         <Text style={styles.label}>Username:</Text>
-//         <TextInput
-//           style={styles.input}
-//           placeholder="Username"
-//           value={userData.username}
-//           onChangeText={(text) => setUserData((prevState) => ({ ...prevState, username: text }))}
-//           editable={isEditing}
-//         />
-//       </View>
-//       <View style={styles.inputContainer}>
-//         <Text style={styles.label}>First Name:</Text>
-//         <TextInput
-//           style={styles.input}
-//           placeholder="First Name"
-//           value={userData.first_name}
-//           onChangeText={(text) => setUserData((prevState) => ({ ...prevState, first_name: text }))}
-//           editable={isEditing}
-//         />
-//       </View>
-//       <View style={styles.inputContainer}>
-//         <Text style={styles.label}>Last Name:</Text>
-//         <TextInput
-//           style={styles.input}
-//           placeholder="Last Name"
-//           value={userData.last_name}
-//           onChangeText={(text) => setUserData((prevState) => ({ ...prevState, last_name: text }))}
-//           editable={isEditing}
-//         />
-//       </View>
-//       <View style={styles.buttonContainer}>
-//         {isEditing ? (
-//           <>
-//             <TouchableOpacity style={styles.button} onPress={updateUserDetails}>
-//               <Text style={styles.buttonText}>Save</Text>
-//               <FontAwesome name="check-circle" size={24} color="#fff" />
-//             </TouchableOpacity>
-//             <TouchableOpacity style={styles.button} onPress={cancelEditing}>
-//               <Text style={styles.buttonText}>Cancel</Text>
-//               <FontAwesome name="times-circle" size={24} color="#fff" />
-//             </TouchableOpacity>
-//           </>
-//         ) : (
-//           <TouchableOpacity
-//             style={styles.editButton}
-//             onPress={() => setIsEditing(true)}
-//           >
-//             <Text style={styles.buttonText}>Edit</Text>
-//             <FontAwesome name="pencil" size={24} color="#fff" />
-//           </TouchableOpacity>
-//         )}
-//       </View>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     padding: 20,
-//     backgroundColor: '#F7F7F7', // Background color
-//   },
-//   profile: {
-//     width: "100%",
-//     height: 150,
-//     borderRadius: 50,
-//     marginBottom: 10,
-//     alignContent: 'center',
-//   },
-//   header: {
-//     fontSize: 24,
-//     fontWeight: 'bold',
-//     marginBottom: 20,
-//   },
-//   label: {
-//     fontSize: 16,
-//     marginBottom: 5,
-//     color: '#333', // Text color
-//   },
-//   inputContainer: {
-//     marginBottom: 15,
-//   },
-//   input: {
-//     fontSize: 16,
-//     borderWidth: 1,
-//     borderColor: '#ccc',
-//     borderRadius: 5,
-//     padding: 10,
-//   },
-//   buttonContainer: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     marginTop: 15,
-//   },
-//   editButton: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     backgroundColor: '#007AFF', // Button background color
-//     borderRadius: 5,
-//     paddingVertical: 10,
-//     flex: 1,
-//     marginRight: 5,
-//   },
-//   button: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     backgroundColor: '#007AFF', // Button background color
-//     borderRadius: 5,
-//     paddingVertical: 10,
-//     flex: 1,
-//     marginRight: 5,
-//   },
-//   buttonText: {
-//     fontSize: 16,
-//     fontWeight: 'bold',
-//     color: '#fff', // Button text color
-//     marginRight: 10,
-//   },
-// });
-
-// export default UserProfile;
 
 
 import React, { useState, useEffect } from 'react';
@@ -214,6 +16,8 @@ import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { useFocusEffect } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+
 
 function UserProfile() {
   const [userData, setUserData] = useState({
@@ -222,12 +26,42 @@ function UserProfile() {
     last_name: '',
     username: '',
     image: '',
+    hashed_password: '', 
   });
 
   const [initialUserData, setInitialUserData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [base64Image, setBase64Image] = useState('');
+
+  const [newPassword, setNewPassword] = useState('');
+
+  const updatePassword = async () => {
+    const accessToken = await SecureStore.getItemAsync('accessToken');
+    const user_id = userData.id;
+    const updatedUserData = {
+      id: user_id,
+      username: userData.username,
+      hashed_password: newPassword, // Assuming newPassword is the new hashed password
+    };
+
+    try {
+      const response = await axios.put(
+        `https://vcloset.xyz/api/users/${user_id}`,
+        updatedUserData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      console.log('Password updated:', response.data);
+      // You can handle success or navigate to a different screen here if needed.
+    } catch (error) {
+      console.error('Error updating password:', error.response.data);
+      // Handle the error, display a message, or take appropriate action.
+    }
+  };
 
   const fetchUserData = async () => {
     const accessToken = await SecureStore.getItemAsync('accessToken');
@@ -276,6 +110,17 @@ function UserProfile() {
       console.error('Error updating user details:', error.response.data);
     }
   };
+  
+ // update password
+  const handleUpdatePassword = () => {
+   // take user to password update screen
+   // navigate to password update screen
+   navigation.navigate('UpdatePassword', { userId: userData.id });
+
+  };
+
+  const navigation = useNavigation();
+
 
   const cancelEditing = () => {
     setUserData(initialUserData);
@@ -378,111 +223,190 @@ function UserProfile() {
         />
       </View>
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>First Name:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="First Name"
-          value={userData.first_name}
-          onChangeText={(text) => setUserData((prevState) => ({ ...prevState, first_name: text }))}
-          editable={isEditing}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Last Name:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Last Name"
-          value={userData.last_name}
-          onChangeText={(text) => setUserData((prevState) => ({ ...prevState, last_name: text }))}
-          editable={isEditing}
-        />
-      </View>
-      <View style={styles.buttonContainer}>
-        {isEditing ? (
-          <>
-            <TouchableOpacity style={styles.button} onPress={updateUserDetails}>
-              <Text style={styles.buttonText}>Save</Text>
-              <FontAwesome name="check-circle" size={24} color="#fff" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={cancelEditing}>
-              <Text style={styles.buttonText}>Cancel</Text>
-              <FontAwesome name="times-circle" size={24} color="#fff" />
-            </TouchableOpacity>
-          </>
-        ) : (
-          <TouchableOpacity
-            style={styles.editButton}
-            onPress={() => setIsEditing(true)}
-          >
-            <Text style={styles.buttonText}>Edit</Text>
-            <FontAwesome name="pencil" size={24} color="#fff" />
-          </TouchableOpacity>
-        )}
-      </View>
+  <Text style={styles.label}>First Name:</Text>
+  <TextInput
+    style={styles.input}
+    placeholder="First Name"
+    value={userData.first_name}
+    onChangeText={(text) => setUserData((prevState) => ({ ...prevState, first_name: text }))}
+    editable={isEditing}
+  />
+</View>
+<View style={styles.inputContainer}>
+  <Text style={styles.label}>Last Name:</Text>
+  <TextInput
+    style={styles.input}
+    placeholder="Last Name"
+    value={userData.last_name}
+    onChangeText={(text) => setUserData((prevState) => ({ ...prevState, last_name: text }))}
+    editable={isEditing}
+  />
+</View>
+<View style={styles.buttonContainer}>
+  {isEditing ? (
+    <>
+      <TouchableOpacity style={styles.button} onPress={updateUserDetails}>
+        <Text style={styles.buttonText}>Save</Text>
+        <FontAwesome name="check-circle" size={24} color="#fff" />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={cancelEditing}>
+        <Text style={styles.buttonText}>Cancel</Text>
+        <FontAwesome name="times-circle" size={24} color="#fff" />
+      </TouchableOpacity>
+    </>
+  ) : (
+    <TouchableOpacity style={styles.editButton} onPress={() => setIsEditing(true)}>
+      <Text style={styles.buttonText}>Edit</Text>
+      <FontAwesome name="pencil" size={24} color="#fff" />
+    </TouchableOpacity>
+  )}
+</View>
+
+  
+        
+<View style={styles.container}>
+    
+
+      <Text style={styles.label}>Need to Update Password?</Text> 
+      <TouchableOpacity style={styles.smallButton} onPress={handleUpdatePassword}>
+        <Text style={styles.smallButtonText}>Update Password</Text>  
+        <FontAwesome name="key" size={18} color="#fff" />  
+      </TouchableOpacity>
     </View>
+      
+       {/* <View style={styles.container}>
+       {/* ... (existing code) */}
+       {/* <View style={styles.inputContainer}>
+         <Text style={styles.label}>New Password:</Text>
+         <TextInput
+           style={styles.input}
+           placeholder="New Password"
+           value={newPassword}
+           onChangeText={(text) => setNewPassword(text)}
+           secureTextEntry={true} // To hide the password input
+           editable={isEditing}
+         />
+       </View> */} 
+       {/* ... (existing code) */}
+       {/* <View style={styles.buttonContainer}>
+         {isEditing ? (
+           <>
+             <TouchableOpacity style={styles.button} onPress={updateUserDetails}>
+               <Text style={styles.buttonText}>Save</Text>
+               <FontAwesome name="check-circle" size={24} color="#fff" />
+             </TouchableOpacity>
+             <TouchableOpacity style={styles.button} onPress={updatePassword}>
+               <Text style={styles.buttonText}>Update Password</Text>
+               <FontAwesome name="key" size={24} color="#fff" />
+             </TouchableOpacity>
+             <TouchableOpacity style={styles.button} onPress={cancelEditing}>
+               <Text style={styles.buttonText}>Cancel</Text>
+               <FontAwesome name="times-circle" size={24} color="#fff" />
+             </TouchableOpacity>
+           </>
+         ) : (
+           <TouchableOpacity style={styles.editButton} onPress={() => setIsEditing(true)}>
+             <Text style={styles.buttonText}>Edit</Text>
+             <FontAwesome name="pencil" size={24} color="#fff" />
+           </TouchableOpacity>
+         )}
+        </View> */}
+      </View>
+    
   );
 }
+ 
+    
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#F7F7F7',
-  },
-  profile: {
-    width: '100%',
-    height: 150,
-    borderRadius: 50,
-    marginBottom: 10,
-    alignContent: 'center',
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-    color: '#333',
-  },
-  inputContainer: {
-    marginBottom: 15,
-  },
-  input: {
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 15,
-  },
-  editButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#007AFF',
-    borderRadius: 5,
-    paddingVertical: 10,
-    flex: 1,
-    marginRight: 5,
-  },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#007AFF',
-    borderRadius: 5,
-    paddingVertical: 10,
-    flex: 1,
-    marginRight: 5,
-  },
+
+
+      const styles = StyleSheet.create({
+        container: {
+          flex: 1,
+          padding: 20,
+          backgroundColor: '#F7F7F7',
+        },
+        profile: {
+          width: '100%',
+          height: 150,
+          borderRadius: 50,
+          marginBottom: 10,
+          alignContent: 'center',
+        },
+        label: {
+          fontSize: 16,
+          marginBottom: 5,
+          color: '#333',
+        },
+        inputContainer: {
+          marginBottom: 15,
+        },
+        input: {
+          fontSize: 16,
+          borderWidth: 1,
+          borderColor: '#ccc',
+          borderRadius: 5,
+          padding: 10,
+        },
+        buttonContainer: {
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginTop: 15,
+        },
+        editButton: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#007AFF',
+          borderRadius: 5,
+          paddingVertical: 10,
+          flex: 1,
+          marginRight: 5,
+        },
+        button: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#007AFF',
+          borderRadius: 5,
+          paddingVertical: 10,
+          flex: 1,
+          marginRight: 5,
+        },
   buttonText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#fff',
     marginRight: 10,
   },
-});
-
+  updateButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#007AFF',
+    borderRadius: 5,
+    paddingVertical: 10,
+    flex: 1,
+    marginRight: 5,
+  },
+  
+    smallButton: {
+      backgroundColor: 'blue',
+      padding: 8, // Reduce the padding to make it smaller
+      borderRadius: 4, // Make it less rounded
+      alignItems: 'center',
+      flexDirection: 'row', // To align the text and icon horizontally
+      justifyContent: 'center', // To center the content
+    },
+    smallButtonText: {
+      color: 'white',
+      fontSize: 14, // Adjust the font size to make it smaller
+      marginRight: 8, // Add space to the right of the text
+    },
+    icon: {
+      marginLeft: 8, // Add space to the right of the icon
+    },
+  });
+  
 export default UserProfile;
 
