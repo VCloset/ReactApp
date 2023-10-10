@@ -22,6 +22,7 @@ import SharedClosetHomeScreen from './src/screens/SharedClosetHomeScreen'
 import ShareGenerateOutfitScreen from './src/screens/ShareGenerateOutfitScreen'
 import SharedOutfitScreen from './src/screens/SharedOutfitScreen'
 import SharedItemsScreen from './src/screens/SharedItemsScreen'
+import UpdatePassword from './src/screens/UpdatePassword'
 
 const Stack = createStackNavigator()
 const Drawer = createDrawerNavigator()

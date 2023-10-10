@@ -8,10 +8,21 @@ import { useRoute } from '@react-navigation/native';
 
 function UpdatePassword({navigation}) {
   const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
   const route = useRoute();
   const userId = route.params.userId;
 
   const handleUpdatePassword = async () => {
+    if (newPassword !== confirmPassword) {
+      // Passwords don't match, show an alert
+      Alert.alert(
+        "Password Mismatch",
+        "The passwords you entered do not match. Please try again.",
+        [{ text: "OK" }]
+      );
+      return;
+    }
     try {
       const accessToken = await SecureStore.getItemAsync('accessToken');
 
@@ -66,12 +77,19 @@ function UpdatePassword({navigation}) {
         onChangeText={(text) => setNewPassword(text)}
         secureTextEntry={true} // To hide the password input
       />
+      <Text style={styles.label}>Confirm Password:</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Confirm Password"
+        value={confirmPassword}
+        onChangeText={(text) => setConfirmPassword(text)}
+        secureTextEntry={true}
+      />
       <TouchableOpacity style={styles.button} onPress={handleUpdatePassword}>
         <Text style={styles.buttonText}>Update Password</Text>
       </TouchableOpacity>
 
-
-      <Text style={styles.label}>Back to User Profile:</Text>
+      <Text style={styles.label}>Go Back?</Text>
       <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
         <Text style={styles.buttonText}>Back to User Profile</Text>
       </TouchableOpacity>
