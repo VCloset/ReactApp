@@ -20,6 +20,7 @@ import ShareHomeScreen from './src/screens/ShareHomeScreen';
 import ViewSharedClosets from './src/screens/ViewSharedClosets';
 import SharedClosetHomeScreen from './src/screens/SharedClosetHomeScreen';
 import ShareGenerateOutfitScreen from './src/screens/ShareGenerateOutfitScreen';
+import 'core-js';
 
 const Stack = createStackNavigator()
 const Drawer = createDrawerNavigator()
