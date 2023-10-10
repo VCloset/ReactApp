@@ -19,6 +19,12 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 
 
+const colors = {
+  primary: '#007AFF',
+  background: '#F7F7F7',
+  text: '#333',
+};
+
 function UserProfile() {
   const [userData, setUserData] = useState({
     id: null,
@@ -34,34 +40,7 @@ function UserProfile() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [base64Image, setBase64Image] = useState('');
 
-  const [newPassword, setNewPassword] = useState('');
 
-  const updatePassword = async () => {
-    const accessToken = await SecureStore.getItemAsync('accessToken');
-    const user_id = userData.id;
-    const updatedUserData = {
-      id: user_id,
-      username: userData.username,
-      hashed_password: newPassword, // Assuming newPassword is the new hashed password
-    };
-
-    try {
-      const response = await axios.put(
-        `https://vcloset.xyz/api/users/${user_id}`,
-        updatedUserData,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      console.log('Password updated:', response.data);
-      // You can handle success or navigate to a different screen here if needed.
-    } catch (error) {
-      console.error('Error updating password:', error.response.data);
-      // Handle the error, display a message, or take appropriate action.
-    }
-  };
 
   const fetchUserData = async () => {
     const accessToken = await SecureStore.getItemAsync('accessToken');
@@ -75,7 +54,12 @@ function UserProfile() {
       });
       setUserData(response.data[0]);
       setInitialUserData(response.data[0]);
+      if (!response.data[0].image.includes('data:image/jpeg;base64,')) {
+        response.data[0].image = `data:image/jpeg;base64,${response.data[0].image}`;
+      }
+
       setSelectedImage(response.data[0].image);
+      
     } catch (error) {
       console.error('Error fetching user data:', error.response);
     }
@@ -125,8 +109,7 @@ function UserProfile() {
   const cancelEditing = () => {
     setUserData(initialUserData);
     setIsEditing(false);
-    setSelectedImage(null);
-    setBase64Image('');
+    setSelectedImage(userData.image);
   };
 
   const openImagePicker = () => {
@@ -152,6 +135,7 @@ function UserProfile() {
   };
 
   const pickImageFromCamera = async () => {
+    setIsEditing(true)
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
 
     if (permissionResult.granted === false) {
@@ -162,12 +146,13 @@ function UserProfile() {
     const result = await ImagePicker.launchCameraAsync();
 
     if (!result.cancelled) {
-      setSelectedImage(result.uri);
       encodeImage(result.uri);
+      setSelectedImage(base64Image);
     }
   };
 
   const pickImageFromLibrary = async () => {
+    setIsEditing(true)
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
@@ -189,7 +174,6 @@ function UserProfile() {
 
     const reader = new FileReader();
     reader.onload = () => {
-      // remove prefix such as `data:image/jpg;base64,`
       setBase64Image(reader.result);
     };
 
@@ -199,19 +183,20 @@ function UserProfile() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        <TouchableOpacity onPress={openImagePicker}>
-          {selectedImage ? (
-            <Image
-              source={{ uri: selectedImage }}
-              style={styles.profile}
-              resizeMode="contain"
-            />
-          ) : (
-            <Text>Select an image</Text>
-          )}
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity onPress={openImagePicker} style={styles.imageContainer}>
+        {selectedImage ? (
+          <Image
+            source={{ uri: selectedImage }}
+            style={styles.profileImage}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={styles.placeholderImage}>
+            <FontAwesome name="camera" size={40} color={colors.primary} />
+            <Text style={styles.placeholderText}>Select an image</Text>
+          </View>
+        )}
+      </TouchableOpacity>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Username:</Text>
         <TextInput
@@ -223,55 +208,56 @@ function UserProfile() {
         />
       </View>
       <View style={styles.inputContainer}>
-  <Text style={styles.label}>First Name:</Text>
-  <TextInput
-    style={styles.input}
-    placeholder="First Name"
-    value={userData.first_name}
-    onChangeText={(text) => setUserData((prevState) => ({ ...prevState, first_name: text }))}
-    editable={isEditing}
-  />
-</View>
-<View style={styles.inputContainer}>
-  <Text style={styles.label}>Last Name:</Text>
-  <TextInput
-    style={styles.input}
-    placeholder="Last Name"
-    value={userData.last_name}
-    onChangeText={(text) => setUserData((prevState) => ({ ...prevState, last_name: text }))}
-    editable={isEditing}
-  />
-</View>
-<View style={styles.buttonContainer}>
-  {isEditing ? (
-    <>
-      <TouchableOpacity style={styles.button} onPress={updateUserDetails}>
-        <Text style={styles.buttonText}>Save</Text>
-        <FontAwesome name="check-circle" size={24} color="#fff" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={cancelEditing}>
-        <Text style={styles.buttonText}>Cancel</Text>
-        <FontAwesome name="times-circle" size={24} color="#fff" />
-      </TouchableOpacity>
-    </>
-  ) : (
-    <TouchableOpacity style={styles.editButton} onPress={() => setIsEditing(true)}>
-      <Text style={styles.buttonText}>Edit</Text>
-      <FontAwesome name="pencil" size={24} color="#fff" />
-    </TouchableOpacity>
-  )}
-</View>
-
-  
-        
-<View style={styles.container}>
+        <Text style={styles.label}>First Name:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="First Name"
+          value={userData.first_name}
+          onChangeText={(text) => setUserData((prevState) => ({ ...prevState, first_name: text }))}
+          editable={isEditing}
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Last Name:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Last Name"
+          value={userData.last_name}
+          onChangeText={(text) => setUserData((prevState) => ({ ...prevState, last_name: text }))}
+          editable={isEditing}
+        />
+      </View>
+      <View style={styles.buttonContainer}>
+        {isEditing ? (
+          <>
+            <TouchableOpacity style={styles.button} onPress={updateUserDetails}>
+              <Text style={styles.buttonText}>Save</Text>
+              <FontAwesome name="check-circle" size={24} color="#fff" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={cancelEditing}>
+              <Text style={styles.buttonText}>Cancel</Text>
+              <FontAwesome name="times-circle" size={24} color="#fff" />
+            </TouchableOpacity>
+          </>
+        ) : (
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={() => setIsEditing(true)}
+          >
+            <Text style={styles.buttonText}>Edit</Text>
+            <FontAwesome name="pencil" size={24} color="#fff" />
+          </TouchableOpacity>
+        )}
+      </View>
+      <View style={styles.container}>
     
 
-      <Text style={styles.label}>Need to Update Password?</Text> 
-      <TouchableOpacity style={styles.smallButton} onPress={handleUpdatePassword}>
-        <Text style={styles.smallButtonText}>Update Password</Text>  
-        <FontAwesome name="key" size={18} color="#fff" />  
-      </TouchableOpacity>
+    <Text style={styles.label}>Need to Update Password?</Text> 
+    <TouchableOpacity style={styles.smallButton} onPress={handleUpdatePassword}>
+      <Text style={styles.smallButtonText}>Update Password</Text>  
+      <FontAwesome name="key" size={18} color="#fff" />  
+    </TouchableOpacity>
+  </View>
     </View>
       
        {/* <View style={styles.container}>
@@ -320,59 +306,82 @@ function UserProfile() {
 
 
 
-      const styles = StyleSheet.create({
-        container: {
-          flex: 1,
-          padding: 20,
-          backgroundColor: '#F7F7F7',
-        },
-        profile: {
-          width: '100%',
-          height: 150,
-          borderRadius: 50,
-          marginBottom: 10,
-          alignContent: 'center',
-        },
-        label: {
-          fontSize: 16,
-          marginBottom: 5,
-          color: '#333',
-        },
-        inputContainer: {
-          marginBottom: 15,
-        },
-        input: {
-          fontSize: 16,
-          borderWidth: 1,
-          borderColor: '#ccc',
-          borderRadius: 5,
-          padding: 10,
-        },
-        buttonContainer: {
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginTop: 15,
-        },
-        editButton: {
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#007AFF',
-          borderRadius: 5,
-          paddingVertical: 10,
-          flex: 1,
-          marginRight: 5,
-        },
-        button: {
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#007AFF',
-          borderRadius: 5,
-          paddingVertical: 10,
-          flex: 1,
-          marginRight: 5,
-        },
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: colors.background,
+  },
+  imageContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  profileImage: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+  },
+  placeholderImage: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: '#eee',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeholderText: {
+    marginTop: 10,
+    color: colors.primary,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 5,
+    color: colors.text,
+  },
+  inputContainer: {
+    marginBottom: 15,
+  },
+  input: {
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 15,
+  },
+  editButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.primary,
+    borderRadius: 5,
+    paddingVertical: 10,
+    flex: 1,
+    marginRight: 5,
+  },
+  saveButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.primary,
+    borderRadius: 5,
+    paddingVertical: 10,
+    flex: 1,
+    marginRight: 5,
+  },
+  cancelButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FF6347',
+    borderRadius: 5,
+    paddingVertical: 10,
+    flex: 1,
+  },
   buttonText: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -409,4 +418,3 @@ function UserProfile() {
   });
   
 export default UserProfile;
-

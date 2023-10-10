@@ -6,15 +6,17 @@ import { useNavigation } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
 import  ImagesLoading  from './components/ImagesLoading';
 
-const OutfitScreen = () => {
+const SharedOutfitScreen = () => {
   const [outfits, setOutfits] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
   const fetchOutfits = async () => {
+
     const accessToken = await SecureStore.getItemAsync('accessToken');
+    const closetId = await SecureStore.getItemAsync('shared_closet_id');
     try {
-      const response = await axios.get('https://vcloset.xyz/api/outfits?skip=0&limit=100', {
+      const response = await axios.get(`https://vcloset.xyz/api/outfits/closet/${closetId}`, {
         headers: {
           Authorization: 'Bearer ' + accessToken,
           accept: 'application/json',
@@ -28,7 +30,7 @@ const OutfitScreen = () => {
       });
 
       const getItems = async (outfit) => {
-        const itemsRes = await axios.get(`https://vcloset.xyz/api/items`, {
+        const itemsRes = await axios.get(`https://vcloset.xyz/api/items/closet/${closetId}`, {
           headers: {
             Authorization: 'Bearer ' + accessToken,
             accept: 'application/json',
@@ -176,4 +178,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default OutfitScreen;
+export default SharedOutfitScreen;
