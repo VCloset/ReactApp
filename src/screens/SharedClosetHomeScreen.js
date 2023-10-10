@@ -1,24 +1,21 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React from 'react'
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 
 const SharedClosetHomeScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation()
 
   const handleGenerateOutfit = () => {
-    navigation.navigate('SharedGenerateOutfit'); // Replace with the actual screen name
-  };
+    navigation.navigate('SharedGenerateOutfit') // Replace with the actual screen name
+  }
 
   const handleViewOutfit = () => {
-    navigation.navigate('SharedOutfit');
-  };
-  
+    navigation.navigate('Outfit') // Replace with the actual screen name
+  }
 
   const handleViewItems = () => {
-    // navigation.navigate('Item'); // Replace with the actual screen name
-  };
-
- 
+    navigation.navigate('SharedItems') // Replace with the actual screen name
+  }
 
   return (
     <View style={styles.container}>
@@ -33,8 +30,8 @@ const SharedClosetHomeScreen = () => {
         <Text style={styles.buttonText}>View Items</Text>
       </TouchableOpacity>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -61,6 +58,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-});
+})
 
-export default SharedClosetHomeScreen;
+export default SharedClosetHomeScreen

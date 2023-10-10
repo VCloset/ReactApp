@@ -1,32 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import LoginScreen from './src/screens/LoginScreen';
-import SignUpScreen from './src/screens/SignUpScreen';
-import HomeScreen from './src/screens/HomeScreen';
-import ItemScreen from './src/screens/ItemScreen';
-import ScanItemScreen from './src/screens/ScanItemScreen';
-import GenerateOutfitScreen from './src/screens/GenerateOutfitScreen';
-import ViewItemScreen from './src/screens/ViewItemScreen';
-import OutfitScreen from './src/screens/OutfitScreen';
-import ViewOutfitScreen from './src/screens/ViewOutfitScreen';
-import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
-import * as SecureStore from 'expo-secure-store';
-import axios from 'axios';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import UserProfile from './src/screens/UserProfile';
-import OutfitMatchingScreen from './src/screens/OutfitsMatchingScreen';
-import ShareHomeScreen from './src/screens/ShareHomeScreen';
-import ViewSharedClosets from './src/screens/ViewSharedClosets';
-import SharedClosetHomeScreen from './src/screens/SharedClosetHomeScreen';
-import ShareGenerateOutfitScreen from './src/screens/ShareGenerateOutfitScreen';
-import SharedOutfitScreen from './src/screens/SharedOutfitScreen';
+import React, { useState, useEffect } from 'react'
+import { NavigationContainer } from '@react-navigation/native'
+import { createStackNavigator } from '@react-navigation/stack'
+import LoginScreen from './src/screens/LoginScreen'
+import SignUpScreen from './src/screens/SignUpScreen'
+import HomeScreen from './src/screens/HomeScreen'
+import ItemScreen from './src/screens/ItemScreen'
+import ScanItemScreen from './src/screens/ScanItemScreen'
+import GenerateOutfitScreen from './src/screens/GenerateOutfitScreen'
+import ViewItemScreen from './src/screens/ViewItemScreen'
+import OutfitScreen from './src/screens/OutfitScreen'
+import ViewOutfitScreen from './src/screens/ViewOutfitScreen'
+import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen'
+import * as SecureStore from 'expo-secure-store'
+import axios from 'axios'
+import { createDrawerNavigator } from '@react-navigation/drawer'
+import UserProfile from './src/screens/UserProfile'
+import OutfitMatchingScreen from './src/screens/OutfitsMatchingScreen'
+import ShareHomeScreen from './src/screens/ShareHomeScreen'
+import ViewSharedClosets from './src/screens/ViewSharedClosets'
+import SharedClosetHomeScreen from './src/screens/SharedClosetHomeScreen'
+import ShareGenerateOutfitScreen from './src/screens/ShareGenerateOutfitScreen'
+import SharedOutfitScreen from './src/screens/SharedOutfitScreen'
+import SharedItemsScreen from './src/screens/SharedItemsScreen'
 
 const Stack = createStackNavigator()
 const Drawer = createDrawerNavigator()
 
-const Logout = ({navigation}) => {
-
+const Logout = ({ navigation }) => {
   const logout = async () => {
     const session_ID = await SecureStore.getItemAsync('sessionId')
     if (!session_ID) {
@@ -34,32 +34,27 @@ const Logout = ({navigation}) => {
     }
     try {
       const response = await axios.post(
-        'https://vcloset.xyz/logout?session_id=' + session_ID,
+        'https://vcloset.xyz/logout?session_id=' + session_ID
       )
       console.log('Logout response:', response.data)
       await SecureStore.deleteItemAsync('accessToken')
       await SecureStore.deleteItemAsync('sessionId')
       await SecureStore.deleteItemAsync('closet_id')
       navigation.navigate('Login')
-
     } catch (error) {
       console.error('Error logging out:', error.response.data)
       await SecureStore.deleteItemAsync('accessToken')
       await SecureStore.deleteItemAsync('sessionId')
       await SecureStore.deleteItemAsync('closet_id')
       navigation.navigate('Login')
-
     }
-
   }
 
   useEffect(() => {
     logout()
-  }
-  , [])
-  return null;
+  }, [])
+  return null
 }
-
 
 const App = () => {
   const [accessToken, setAccessToken] = useState('')
@@ -125,49 +120,96 @@ const App = () => {
     return () => clearInterval(tokenRenewalInterval)
   }, [])
 
-  
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName='Login'>
-        <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
+        <Stack.Screen
+          name='Login'
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
         {/* make the header background clear and the text 333333 */}
-        <Stack.Screen name='SignUp' component={SignUpScreen} options={{ title:'', headerStyle: { backgroundColor: 'transparent' }, headerTransparent: true, headerTintColor: '#333333' }} />
-        <Stack.Screen name='ForgotPassword' component={ForgotPasswordScreen} options={{ title:'', headerStyle: { backgroundColor: 'transparent' }, headerTransparent: true, headerTintColor: '#333333' }} />
+        <Stack.Screen
+          name='SignUp'
+          component={SignUpScreen}
+          options={{
+            title: '',
+            headerStyle: { backgroundColor: 'transparent' },
+            headerTransparent: true,
+            headerTintColor: '#333333',
+          }}
+        />
+        <Stack.Screen
+          name='ForgotPassword'
+          component={ForgotPasswordScreen}
+          options={{
+            title: '',
+            headerStyle: { backgroundColor: 'transparent' },
+            headerTransparent: true,
+            headerTintColor: '#333333',
+          }}
+        />
         <Stack.Screen name='ViewItem' component={ViewItemScreen} />
         <Stack.Screen name='ViewOutfit' component={ViewOutfitScreen} />
-        <Stack.Screen name='Shared Closet Home' component={SharedClosetHomeScreen} />
-        <Stack.Screen name='SharedGenerateOutfit' component={ShareGenerateOutfitScreen} />
+        <Stack.Screen
+          name='Shared Closet Home'
+          component={SharedClosetHomeScreen}
+        />
+        <Stack.Screen
+          name='SharedGenerateOutfit'
+          component={ShareGenerateOutfitScreen}
+        />
         <Stack.Screen name='SharedOutfit' component={SharedOutfitScreen} />
+        <Stack.Screen name='SharedItems' component={SharedItemsScreen} />
         <Stack.Screen
           name='HomeLogin'
           options={{
             headerShown: false, // Hide the header for the Home screen
           }}>
           {() => (
-            <Drawer.Navigator initialRouteName="Item">
-            {/* <Drawer.Screen name='Home' component={HomeScreen} options={{ title:'Home', headerStyle: { backgroundColor: 'transparent' }, headerTransparent: true, headerTintColor: '#333333' }} /> */}
-            <Drawer.Screen
+            <Drawer.Navigator initialRouteName='Item'>
+              {/* <Drawer.Screen name='Home' component={HomeScreen} options={{ title:'Home', headerStyle: { backgroundColor: 'transparent' }, headerTransparent: true, headerTintColor: '#333333' }} /> */}
+              <Drawer.Screen
                 name='GenerateOutfit'
                 component={GenerateOutfitScreen}
-                options={{ title: 'Generate Outfit' }} 
-            />
-            <Drawer.Screen 
-              name='Outfit' component={OutfitScreen} 
-              options={{ title: 'View Outfits' }} />
-            <Drawer.Screen 
-              name='Item' component={ItemScreen} 
-              options={{ title: 'My Collection' , headerStyle: { backgroundColor: '#FF6B6B' },  headerTintColor: 'white' , headerTransparent: false}} />
-            <Drawer.Screen 
-              name='ScanItem' component={ScanItemScreen} 
-              options={{ title: 'Scan Item' }} />
+                options={{ title: 'Generate Outfit' }}
+              />
+              <Drawer.Screen
+                name='Outfit'
+                component={OutfitScreen}
+                options={{ title: 'View Outfits' }}
+              />
+              <Drawer.Screen
+                name='Item'
+                component={ItemScreen}
+                options={{
+                  title: 'My Collection',
+                  headerStyle: { backgroundColor: '#FF6B6B' },
+                  headerTintColor: 'white',
+                  headerTransparent: false,
+                }}
+              />
+              <Drawer.Screen
+                name='ScanItem'
+                component={ScanItemScreen}
+                options={{ title: 'Scan Item' }}
+              />
 
-            <Drawer.Screen name="Outfits Matching" component={OutfitMatchingScreen} />
-            <Drawer.Screen name="Share Closet" component={ShareHomeScreen} />
-            <Drawer.Screen name="Shared Closets" component={ViewSharedClosets} />
-            <Drawer.Screen 
-              name='User' component={UserProfile} 
-              options={{ title: 'User Profile' }} />
-            <Drawer.Screen name="Logout" component={Logout} />            
+              <Drawer.Screen
+                name='Outfits Matching'
+                component={OutfitMatchingScreen}
+              />
+              <Drawer.Screen name='Share Closet' component={ShareHomeScreen} />
+              <Drawer.Screen
+                name='Shared Closets'
+                component={ViewSharedClosets}
+              />
+              <Drawer.Screen
+                name='User'
+                component={UserProfile}
+                options={{ title: 'User Profile' }}
+              />
+              <Drawer.Screen name='Logout' component={Logout} />
             </Drawer.Navigator>
           )}
         </Stack.Screen>
