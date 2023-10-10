@@ -31,8 +31,7 @@ function UserProfile() {
     first_name: '',
     last_name: '',
     username: '',
-    image: '',
-    hashed_password: '', 
+    image: ''
   });
 
   const [initialUserData, setInitialUserData] = useState({});
@@ -59,7 +58,7 @@ function UserProfile() {
       }
 
       setSelectedImage(response.data[0].image);
-      
+
     } catch (error) {
       console.error('Error fetching user data:', error.response);
     }
@@ -94,12 +93,12 @@ function UserProfile() {
       console.error('Error updating user details:', error.response.data);
     }
   };
-  
- // update password
+
+  // update password
   const handleUpdatePassword = () => {
-   // take user to password update screen
-   // navigate to password update screen
-   navigation.navigate('UpdatePassword', { userId: userData.id });
+    // take user to password update screen
+    // navigate to password update screen
+    navigation.navigate('UpdatePassword', { userId: userData.id });
 
   };
 
@@ -250,59 +249,21 @@ function UserProfile() {
         )}
       </View>
       <View style={styles.container}>
-    
 
-    <Text style={styles.label}>Need to Update Password?</Text> 
-    <TouchableOpacity style={styles.smallButton} onPress={handleUpdatePassword}>
-      <Text style={styles.smallButtonText}>Update Password</Text>  
-      <FontAwesome name="key" size={18} color="#fff" />  
-    </TouchableOpacity>
-  </View>
-    </View>
-      
-       {/* <View style={styles.container}>
-       {/* ... (existing code) */}
-       {/* <View style={styles.inputContainer}>
-         <Text style={styles.label}>New Password:</Text>
-         <TextInput
-           style={styles.input}
-           placeholder="New Password"
-           value={newPassword}
-           onChangeText={(text) => setNewPassword(text)}
-           secureTextEntry={true} // To hide the password input
-           editable={isEditing}
-         />
-       </View> */} 
-       {/* ... (existing code) */}
-       {/* <View style={styles.buttonContainer}>
-         {isEditing ? (
-           <>
-             <TouchableOpacity style={styles.button} onPress={updateUserDetails}>
-               <Text style={styles.buttonText}>Save</Text>
-               <FontAwesome name="check-circle" size={24} color="#fff" />
-             </TouchableOpacity>
-             <TouchableOpacity style={styles.button} onPress={updatePassword}>
-               <Text style={styles.buttonText}>Update Password</Text>
-               <FontAwesome name="key" size={24} color="#fff" />
-             </TouchableOpacity>
-             <TouchableOpacity style={styles.button} onPress={cancelEditing}>
-               <Text style={styles.buttonText}>Cancel</Text>
-               <FontAwesome name="times-circle" size={24} color="#fff" />
-             </TouchableOpacity>
-           </>
-         ) : (
-           <TouchableOpacity style={styles.editButton} onPress={() => setIsEditing(true)}>
-             <Text style={styles.buttonText}>Edit</Text>
-             <FontAwesome name="pencil" size={24} color="#fff" />
-           </TouchableOpacity>
-         )}
-        </View> */}
+
+        <Text style={styles.label}>Need to Update Password?</Text>
+        <TouchableOpacity style={styles.smallButton} onPress={handleUpdatePassword}>
+          <Text style={styles.smallButtonText}>Update Password</Text>
+          <FontAwesome name="key" size={18} color="#fff" />
+        </TouchableOpacity>
       </View>
-    
+    </View>
+
+
   );
 }
- 
-    
+
+
 
 
 
@@ -398,23 +359,23 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 5,
   },
-  
-    smallButton: {
-      backgroundColor: 'blue',
-      padding: 8, // Reduce the padding to make it smaller
-      borderRadius: 4, // Make it less rounded
-      alignItems: 'center',
-      flexDirection: 'row', // To align the text and icon horizontally
-      justifyContent: 'center', // To center the content
-    },
-    smallButtonText: {
-      color: 'white',
-      fontSize: 14, // Adjust the font size to make it smaller
-      marginRight: 8, // Add space to the right of the text
-    },
-    icon: {
-      marginLeft: 8, // Add space to the right of the icon
-    },
-  });
-  
+
+  smallButton: {
+    backgroundColor: 'blue',
+    padding: 8, // Reduce the padding to make it smaller
+    borderRadius: 4, // Make it less rounded
+    alignItems: 'center',
+    flexDirection: 'row', // To align the text and icon horizontally
+    justifyContent: 'center', // To center the content
+  },
+  smallButtonText: {
+    color: 'white',
+    fontSize: 14, // Adjust the font size to make it smaller
+    marginRight: 8, // Add space to the right of the text
+  },
+  icon: {
+    marginLeft: 8, // Add space to the right of the icon
+  },
+});
+
 export default UserProfile;
