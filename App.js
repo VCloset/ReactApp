@@ -20,6 +20,7 @@ import ShareHomeScreen from './src/screens/ShareHomeScreen';
 import ViewSharedClosets from './src/screens/ViewSharedClosets';
 import SharedClosetHomeScreen from './src/screens/SharedClosetHomeScreen';
 import ShareGenerateOutfitScreen from './src/screens/ShareGenerateOutfitScreen';
+import SharedOutfitScreen from './src/screens/SharedOutfitScreen';
 
 const Stack = createStackNavigator()
 const Drawer = createDrawerNavigator()
@@ -136,6 +137,7 @@ const App = () => {
         <Stack.Screen name='ViewOutfit' component={ViewOutfitScreen} />
         <Stack.Screen name='Shared Closet Home' component={SharedClosetHomeScreen} />
         <Stack.Screen name='SharedGenerateOutfit' component={ShareGenerateOutfitScreen} />
+        <Stack.Screen name='SharedOutfit' component={SharedOutfitScreen} />
         <Stack.Screen
           name='HomeLogin'
           options={{

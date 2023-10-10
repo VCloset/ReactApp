@@ -31,6 +31,7 @@ const ShareGenerateOutfitScreen = () => {
   const handleGenerateOutfit = async () => {
     const accessToken = await SecureStore.getItemAsync('accessToken')
     const closet = await SecureStore.getItemAsync('shared_closet_id')
+    console.log('closet', closet)
 
     try {
       setLoading(true)
