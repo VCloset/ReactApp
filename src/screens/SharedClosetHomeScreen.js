@@ -10,7 +10,7 @@ const SharedClosetHomeScreen = () => {
   }
 
   const handleViewOutfit = () => {
-    navigation.navigate('Outfit') // Replace with the actual screen name
+    navigation.navigate('SharedOutfit') // Replace with the actual screen name
   }
 
   const handleViewItems = () => {
