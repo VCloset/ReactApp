@@ -203,6 +203,12 @@ const App = () => {
               <Drawer.Screen
                 name='Outfits Matching'
                 component={OutfitMatchingScreen}
+                options={{
+                  title: 'Outfits Matching',
+                  headerStyle: { backgroundColor: '#FF6B6B' },
+                  headerTintColor: 'white',
+                  headerTransparent: false,
+                }}
               />
               <Drawer.Screen name='Share Closet' component={ShareHomeScreen} />
               <Drawer.Screen

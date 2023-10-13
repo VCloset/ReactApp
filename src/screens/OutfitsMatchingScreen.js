@@ -189,14 +189,22 @@ const OutfitMatchingScreen = () => {
         toValue: 0,
         duration: 300, // You can adjust the animation duration as needed
         useNativeDriver: false,
-      }).start(() => {});
+      }).start(() => { });
     }
   };
 
-  
+
   return (
+
+
     <View style={styles.container}>
-      
+    <View style={{ position: 'absolute', top: 20, right: 20 }}>
+
+      <TouchableOpacity style={styles.refreshButton} onPress={handleRefresh}>
+        {/* Use the refresh icon */}
+        <AntDesign name="reload1" size={24} color="white" />
+      </TouchableOpacity>
+    </View>
       {loading ? (
         <ImagesLoading />
       ) : outfits.length > 0 && currentIndex < outfits.length ? (
@@ -219,12 +227,9 @@ const OutfitMatchingScreen = () => {
         </PanGestureHandler>
       ) : (
         <View>
-        <TouchableOpacity style={styles.refreshButton} onPress={handleRefresh}>
-        {/* Use the refresh icon */}
-        <AntDesign name="reload1" size={24} color="white" />
-      </TouchableOpacity>
-        <Text style={styles.text}>No more fashionable outfits left!</Text>
-        
+
+          <Text style={styles.text}>No more fashionable outfits left!</Text>
+
         </View>
       )}
     </View>
@@ -244,9 +249,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   refreshButton: {
-    position: 'absolute',
-    top: 40, // Adjust the top position as needed
-    right: 20, // Adjust the right position as needed
+    // position: 'absolute',
+    // bottom: 300, // Adjust the top position as needed
+    // right: -150, // Adjust the right position as needed
     backgroundColor: colors.buttonBackground,
     borderRadius: 20,
     width: 40,

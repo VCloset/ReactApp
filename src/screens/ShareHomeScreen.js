@@ -57,8 +57,8 @@ const ShareHomeScreen = () => {
       // if image doesnt contain data:image/jpeg;base64,
       // add it before setting the image
       response.data.forEach((user) => {
-        if (!user.image.includes('data:image/jpeg;base64,')) {
-          user.image = `data:image/jpeg;base64,${user.image}`;
+        if (!user.image.includes('data:image/png;base64,') && !user.image.includes('data:image/jpeg;base64,')) {
+          user.image = `data:image/png;base64,${user.image}`;
         }
       });
 
