@@ -53,8 +53,13 @@ function UserProfile() {
       });
       setUserData(response.data[0]);
       setInitialUserData(response.data[0]);
-      if (!response.data[0].image.includes('data:image/png;base64,')&& !user.image.includes('data:image/jpeg;base64,')) {
-        response.data[0].image = `data:image/png;base64,${response.data[0].image}`;
+
+      try {
+        if (!response.data[0].image.includes('data:image/png;base64,') && !response.data[0].image.includes('data:image/jpeg;base64,')) {
+          response.data[0].image = `data:image/png;base64,${response.data[0].image}`;
+        }
+      } catch (error) {
+        console.error('Error fetching user img:', error);
       }
 
       setSelectedImage(response.data[0].image);

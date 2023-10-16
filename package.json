@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "@expo/webpack-config": "^19.0.0",
+    "@react-navigation/bottom-tabs": "^6.5.9",
     "@react-navigation/drawer": "^6.6.4",
+    "@react-navigation/material-top-tabs": "^6.6.4",
     "@react-navigation/native": "^6.1.8",
     "@react-navigation/stack": "^6.3.17",
     "expo": "^49.0.7",
@@ -38,6 +40,7 @@
     "react-native-safe-area-context": "4.6.3",
     "react-native-screens": "^3.25.0",
     "react-native-swipeout": "^2.3.6",
+    "react-native-tab-view": "^3.5.2",
     "react-native-vector-icons": "^10.0.0",
     "react-native-web": "~0.19.6",
     "react-navigation": "^5.0.0",
