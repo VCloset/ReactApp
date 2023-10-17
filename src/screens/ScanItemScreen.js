@@ -91,8 +91,10 @@ const ScanItemScreen = () => {
         quality: 1,
       });
 
-      if (!result.cancelled) {
-        setImage(result.uri);
+      const uri = result.assets.map(x=>x.uri).toString()
+
+      if (!result.canceled) {
+        setImage(uri);
       }
     } else {
       console.log('Camera permission not granted');
@@ -107,8 +109,10 @@ const ScanItemScreen = () => {
       quality: 1,
     });
 
+    const uri = result.assets.map(x=>x.uri).toString()
+
     if (!result.canceled) {
-      setImage(result.uri);
+      setImage(uri);
     }
   };
 
