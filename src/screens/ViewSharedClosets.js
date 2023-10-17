@@ -29,7 +29,7 @@ const ViewSharedClosets = () => {
       getSharedClosets();
     }, [])
   );
-  
+
 
 
 
@@ -48,6 +48,12 @@ const ViewSharedClosets = () => {
       setClosets(response.data);
       setLoading(false);
     } catch (err) {
+      // logout user if token expires
+      if (err.response.status === 401) {
+        await SecureStore.deleteItemAsync('accessToken');
+        await SecureStore.deleteItemAsync('refreshToken');
+        navigation.navigate('Login');
+      }
       setError(err.message);
       setLoading(false);
     }
@@ -56,7 +62,7 @@ const ViewSharedClosets = () => {
   const renderClosetItem = ({ item }) => (
     <TouchableOpacity onPress={() => handleClosetSelect(item)}>
       <View style={styles.closetItem}>
-        <Text style={styles.closetName}>{`${item.user_id} - ${item.first_name}'s Closet`}</Text>
+        <Text style={styles.closetName}>{`${item.first_name}'s Closet`}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -75,13 +81,21 @@ const ViewSharedClosets = () => {
         <ActivityIndicator size="large" />
       ) : error ? (
         <Text>Error: {error}</Text>
-      ) : (
-        <FlatList
-          data={closets}
-          renderItem={renderClosetItem}
-          keyExtractor={(item) => item.id.toString()}
-        />
-      )}
+      ) : closets.length === 0 ? ( // if no closets
+      <Text style={{ fontSize: 18, fontStyle: 'italic', color: 'navy', textAlign: 'center' }}>
+  Regrettably, you have yet to be entrusted with any shared closets.
+</Text>
+
+      ) :
+        (
+
+          <FlatList
+            data={closets}
+            renderItem={renderClosetItem}
+            keyExtractor={(item) => item.id.toString()}
+
+          />
+        )}
 
       <Modal visible={selectedCloset !== null} animationType="slide">
         <View style={styles.modalContent}>

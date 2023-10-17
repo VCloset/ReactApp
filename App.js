@@ -24,9 +24,55 @@ import SharedOutfitScreen from './src/screens/SharedOutfitScreen'
 import SharedItemsScreen from './src/screens/SharedItemsScreen'
 import UpdatePassword from './src/screens/UpdatePassword'
 import ManageSharedScreen from './src/screens/ManageSharedScreen';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { Image } from 'react-native';
+
+// import icons
+import wardrobeIcon from '../VC/src/screens/icons/wardrobe-icon.png'
+import shareClosetIcon from '../VC/src/screens/icons/share-closet-icon.png'
+import outfitIcon from '../VC/src/screens/icons/outfit-icon.png'
+import { BlurView } from 'expo-blur';
+// import ant design icons
+import { AntDesign } from '@expo/vector-icons';
 
 const Stack = createStackNavigator()
 const Drawer = createDrawerNavigator()
+const Tab = createBottomTabNavigator()
+const TopTab = createMaterialTopTabNavigator();
+
+
+// Top Tabs for Outfit Section
+function OutfitTopTabs() {
+  return (
+    <TopTab.Navigator initialRouteName="OutfitScreen" tabBarOptions={{ showIcon: true, showLabel: true, activeTintColor: '#FF6B6B', inactiveTintColor: '#748c94', labelStyle: { fontSize: 12, fontWeight: 'bold', paddingTop: 50 } }}>
+      <TopTab.Screen name="GenerateOutfit" component={GenerateOutfitScreen} options={{ title: 'Generate' }} headerShown={false} />
+      <TopTab.Screen name="OutfitScreen" component={OutfitScreen} options={{ title: 'View' }} />
+      <TopTab.Screen name="OutfitsMatching" component={OutfitMatchingScreen} options={{ title: 'Matching' }} />
+    </TopTab.Navigator>
+  );
+}
+
+// Top Tabs for My Collection Section
+function MyCollectionTopTabs() {
+  return (
+    <TopTab.Navigator initialRouteName="ItemScreen" tabBarOptions={{ showIcon: true, showLabel: true, activeTintColor: '#FF6B6B', inactiveTintColor: '#748c94', labelStyle: { fontSize: 12, fontWeight: 'bold', paddingTop: 50 } }}>
+      <TopTab.Screen name="ItemScreen" component={ItemScreen} options={{ title: 'My Collection' }} headerShown={false} />
+      <TopTab.Screen name="ScanItem" component={ScanItemScreen} options={{ title: 'Add Item' }} />
+    </TopTab.Navigator>
+  );
+}
+
+function ShareClosetTopTabs() {
+  return (
+    <TopTab.Navigator initialRouteName='Share Closet' tabBarOptions={{ showIcon: true, showLabel: true, activeTintColor: '#FF6B6B', inactiveTintColor: '#748c94', labelStyle: { fontSize: 12, fontWeight: 'bold', paddingTop: 50 } }}>
+      <TopTab.Screen name='Share Closet' component={ShareHomeScreen} options={{ title: 'Share' }} headerShown={false} />
+      <TopTab.Screen name='Shared Closets' component={ViewSharedClosets} options={{ title: 'Browse' }} />
+      <TopTab.Screen name='Manage Shared Closet' component={ManageSharedScreen} options={{ title: 'Manage' }} />
+    </TopTab.Navigator>
+  )
+}
+
 
 const Logout = ({ navigation }) => {
   const logout = async () => {
@@ -128,6 +174,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName='Login'>
+      <Stack.Screen name="Logout" component={Logout} options={{ headerShown: false }} />
         <Stack.Screen
           name='Login'
           component={LoginScreen}
@@ -156,7 +203,7 @@ const App = () => {
         />
         <Stack.Screen name='ViewItem' component={ViewItemScreen} />
         <Stack.Screen name='ViewOutfit' component={ViewOutfitScreen} />
-        <Stack.Screen name= 'UpdatePassword' component={UpdatePassword} />
+        <Stack.Screen name='UpdatePassword' component={UpdatePassword} />
         <Stack.Screen
           name='Shared Closet Home'
           component={SharedClosetHomeScreen}
@@ -167,66 +214,39 @@ const App = () => {
         />
         <Stack.Screen name='SharedOutfit' component={SharedOutfitScreen} />
         <Stack.Screen name='SharedItems' component={SharedItemsScreen} />
-        <Stack.Screen 
-        name='HomeLogin'
+        <Stack.Screen
+          name='HomeLogin'
           options={{
             headerShown: false, // Hide the header for the Home screen
           }}>
           {() => (
-            <Drawer.Navigator initialRouteName='Item'>
-              {/* <Drawer.Screen name='Home' component={HomeScreen} options={{ title:'Home', headerStyle: { backgroundColor: 'transparent' }, headerTransparent: true, headerTintColor: '#333333' }} /> */}
-              <Drawer.Screen
-                name='GenerateOutfit'
-                component={GenerateOutfitScreen}
-                options={{ title: 'Generate Outfit' }}
-              />
-              <Drawer.Screen
-                name='Outfit'
-                component={OutfitScreen}
-                options={{ title: 'View Outfits' }}
-              />
-              <Drawer.Screen
-                name='Item'
-                component={ItemScreen}
-                options={{
-                  title: 'My Collection',
-                  headerStyle: { backgroundColor: '#FF6B6B' },
-                  headerTintColor: 'white',
-                  headerTransparent: false,
-                }}
-              />
-              <Drawer.Screen
-                name='ScanItem'
-                component={ScanItemScreen}
-                options={{ title: 'Scan Item' }}
-              />
 
-              <Drawer.Screen
-                name='Outfits Matching'
-                component={OutfitMatchingScreen}
-                options={{
-                  title: 'Outfits Matching',
-                  headerStyle: { backgroundColor: '#FF6B6B' },
-                  headerTintColor: 'white',
-                  headerTransparent: false,
-                }}
+            <Tab.Navigator initialRouteName='Item' screenOptions={{
+              tabBarStyle: {
+                position: 'absolute',
+                bottom: 25,
+                left: 20,
+                right: 20,
+                elevation: 0,
+                backgroundColor: '#f2f2f2',
+                borderRadius: 15,
+                height: 80,
+              },
+              tabBarActiveTintColor: '#FF6B6B',
+              tabBarInactiveTintColor: '#748c94',
+              tabBarBackground: () => (
+                <BlurView tint="light" intensity={100} style={{ flex: 1 }} />
+              ),
+            }}>
+              <Tab.Screen name='Outfits' component={OutfitTopTabs} 
+              options={{ title: '', tabBarIcon: ({ focused }) => <Image source={outfitIcon} style={{ width:70, height: 70, top:20, tintColor: focused ? '#FF6B6B' : '#748c94' }} />, headerShown: false }} />
+              <Tab.Screen name='Item' component={MyCollectionTopTabs}
+                options={{ title: '', tabBarIcon: ({ focused }) => <Image source={wardrobeIcon} style={{ width: 60, height: 60, top:20, tintColor: focused ? '#FF6B6B' : '#748c94' }} />, headerShown: false }}
               />
-              <Drawer.Screen name='Share Closet' component={ShareHomeScreen} />
-              <Drawer.Screen
-                name='Shared Closets'
-                component={ViewSharedClosets}
-              />
-              <Drawer.Screen
-                name='Manage Shared Closet'
-                component={ManageSharedScreen}
-              />
-              <Drawer.Screen
-                name='User'
-                component={UserProfile}
-                options={{ title: 'User Profile' }}
-              />
-              <Drawer.Screen name='Logout' component={Logout} />
-            </Drawer.Navigator>
+              <Tab.Screen name='Share Closets' component={ShareClosetTopTabs} options={{ title: '', tabBarIcon: ({ focused }) => <Image source={shareClosetIcon} style={{ width: 60, height: 60,  top:15, tintColor: focused ? '#FF6B6B' : '#748c94' }} />, headerShown: false }} />
+              <Tab.Screen name='User' component={UserProfile} options={{ title: '', tabBarIcon: ({ focused }) => <AntDesign name="user" size={50} color={focused ? '#FF6B6B' : '#748c94'} style={{ top:20,}} />, headerShown: false }} />
+
+            </Tab.Navigator>
           )}
         </Stack.Screen>
       </Stack.Navigator>
@@ -235,3 +255,59 @@ const App = () => {
 }
 
 export default App
+
+
+// <Drawer.Navigator initialRouteName='Item'>
+//               {/* <Drawer.Screen name='Home' component={HomeScreen} options={{ title:'Home', headerStyle: { backgroundColor: 'transparent' }, headerTransparent: true, headerTintColor: '#333333' }} /> */}
+//               <Drawer.Screen
+//                 name='GenerateOutfit'
+//                 component={GenerateOutfitScreen}
+//                 options={{ title: 'Generate Outfit' }}
+//               />
+//               <Drawer.Screen
+//                 name='Outfit'
+//                 component={OutfitScreen}
+//                 options={{ title: 'View Outfits' }}
+//               />
+//               <Drawer.Screen
+//                 name='Item'
+//                 component={ItemScreen}
+//                 options={{
+//                   title: 'My Collection',
+//                   headerStyle: { backgroundColor: '#FF6B6B' },
+//                   headerTintColor: 'white',
+//                   headerTransparent: false,
+//                 }}
+//               />
+//               <Drawer.Screen
+//                 name='ScanItem'
+//                 component={ScanItemScreen}
+//                 options={{ title: 'Scan Item' }}
+//               />
+
+//               <Drawer.Screen
+//                 name='Outfits Matching'
+//                 component={OutfitMatchingScreen}
+//                 options={{
+//                   title: 'Outfits Matching',
+//                   headerStyle: { backgroundColor: '#FF6B6B' },
+//                   headerTintColor: 'white',
+//                   headerTransparent: false,
+//                 }}
+//               />
+//               <Drawer.Screen name='Share Closet' component={ShareHomeScreen} />
+//               <Drawer.Screen
+//                 name='Shared Closets'
+//                 component={ViewSharedClosets}
+//               />
+//               <Drawer.Screen
+//                 name='Manage Shared Closet'
+//                 component={ManageSharedScreen}
+//               />
+//               <Drawer.Screen
+//                 name='User'
+//                 component={UserProfile}
+//                 options={{ title: 'User Profile' }}
+//               />
+//               <Drawer.Screen name='Logout' component={Logout} />
+//             </Drawer.Navigator>

@@ -17,12 +17,14 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { useFocusEffect } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import { ScrollView } from 'react-native-gesture-handler';
 
 
 const colors = {
   primary: '#007AFF',
-  background: '#F7F7F7',
-  text: '#333',
+  background: '#FFFFFF',  // Changed to pure white for a cleaner look
+  text: '#333333',
+  border: '#E0E0E0',  // New border color for inputs and buttons
 };
 
 function UserProfile() {
@@ -65,6 +67,11 @@ function UserProfile() {
       setSelectedImage(response.data[0].image);
 
     } catch (error) {
+      if (err.response.status === 401) {
+        await SecureStore.deleteItemAsync('accessToken');
+        await SecureStore.deleteItemAsync('refreshToken');
+        navigation.navigate('Login');
+      }
       console.error('Error fetching user data:', error.response);
     }
   };
@@ -95,6 +102,11 @@ function UserProfile() {
       console.log('User details updated:', response.data);
       setIsEditing(false);
     } catch (error) {
+      if (err.response.status === 401) {
+        await SecureStore.deleteItemAsync('accessToken');
+        await SecureStore.deleteItemAsync('refreshToken');
+        navigation.navigate('Login');
+      }
       console.error('Error updating user details:', error.response.data);
     }
   };
@@ -186,7 +198,8 @@ function UserProfile() {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}> 
+    {/* <View style={styles.container}> */}
       <TouchableOpacity onPress={openImagePicker} style={styles.imageContainer}>
         {selectedImage ? (
           <Image
@@ -231,7 +244,7 @@ function UserProfile() {
           editable={isEditing}
         />
       </View>
-      <View style={styles.buttonContainer}>
+      <View style={styles.buttonGroup}>
         {isEditing ? (
           <>
             <TouchableOpacity style={styles.button} onPress={updateUserDetails}>
@@ -244,26 +257,37 @@ function UserProfile() {
             </TouchableOpacity>
           </>
         ) : (
+          <>
           <TouchableOpacity
-            style={styles.editButton}
-            onPress={() => setIsEditing(true)}
-          >
-            <Text style={styles.buttonText}>Edit</Text>
-            <FontAwesome name="pencil" size={24} color="#fff" />
-          </TouchableOpacity>
+              style={[styles.button, styles.editButton]}  // Apply multiple styles
+              onPress={() => setIsEditing(true)}
+            >
+              <Text style={styles.buttonText}>Edit</Text>
+              <FontAwesome name="pencil" size={24} color="#fff" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.logoutButton]}  // New logout button
+              onPress={() => {
+                SecureStore.deleteItemAsync('accessToken');
+                SecureStore.deleteItemAsync('refreshToken');
+                navigation.navigate('Login');
+              }
+              }
+            >
+              <Text style={styles.buttonText}>Logout</Text>
+              <FontAwesome name="sign-out" size={24} color="#fff" />
+            </TouchableOpacity>
+          </>
         )}
       </View>
       <View style={styles.container}>
-
-
-        <Text style={styles.label}>Need to Update Password?</Text>
         <TouchableOpacity style={styles.smallButton} onPress={handleUpdatePassword}>
-          <Text style={styles.smallButtonText}>Update Password</Text>
-          <FontAwesome name="key" size={18} color="#fff" />
+          <Text style={styles.smallButtonText}>Change Password</Text>
         </TouchableOpacity>
       </View>
-    </View>
-
+    {/* </View>
+     */}
+    </ScrollView>
 
   );
 }
@@ -273,19 +297,30 @@ function UserProfile() {
 
 
 const styles = StyleSheet.create({
+  buttonGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,  // New style for better spacing
+  },
+  logoutButton: {
+    backgroundColor: '#FF6347',
+  },
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: colors.background,
+    paddingHorizontal: 24, // More padding to give elements more room to breathe
+    paddingTop: 40, // Additional safe area top padding
   },
   imageContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
+    alignSelf: 'center',
+    marginBottom: 32,
   },
   profileImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
+    width: 120, // Reduced size for minimalism
+    height: 120,
+    borderRadius: 60, // Fully rounded edges
+    borderWidth: 2, // New border for image
+    borderColor: colors.border, // Using the new border color
   },
   placeholderImage: {
     width: 150,
@@ -300,34 +335,39 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
   label: {
-    fontSize: 16,
-    marginBottom: 5,
+    fontSize: 14, // Smaller font size
+    fontWeight: '600', // Slightly bold for better readability
+    marginBottom: 8, // Space between label and input field
     color: colors.text,
   },
   inputContainer: {
-    marginBottom: 15,
+    marginBottom: 24, // Consistent spacing between elements
   },
   input: {
     fontSize: 16,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
+    borderColor: colors.border, // Using the new border color
+    borderRadius: 10, // Increased for rounder corners
+    padding: 12, // More padding inside the input
+    color: colors.text, // Text color for the input
   },
-  buttonContainer: {
+  buttonGroup: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 15,
+    marginTop: 24, // Consistent margin for cleaner UI
+  },
+  button: {
+    // Universal styles for buttons
+    borderRadius: 10,
+    padding: 12,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 4, // Small margin for spacing between buttons
   },
   editButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: colors.primary,
-    borderRadius: 5,
-    paddingVertical: 10,
-    flex: 1,
-    marginRight: 5,
   },
   saveButton: {
     flexDirection: 'row',
@@ -350,9 +390,9 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginRight: 10,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginRight: 8, // Consistent spacing between text and icon
   },
   updateButton: {
     flexDirection: 'row',
@@ -366,17 +406,18 @@ const styles = StyleSheet.create({
   },
 
   smallButton: {
-    backgroundColor: 'blue',
-    padding: 8, // Reduce the padding to make it smaller
-    borderRadius: 4, // Make it less rounded
+    // For less important actions
+    backgroundColor: colors.primary,
+    borderRadius: 10,
+    padding: 12,
     alignItems: 'center',
-    flexDirection: 'row', // To align the text and icon horizontally
-    justifyContent: 'center', // To center the content
+    justifyContent: 'center',
+    marginTop: 16, // Additional space from the other content
   },
   smallButtonText: {
-    color: 'white',
-    fontSize: 14, // Adjust the font size to make it smaller
-    marginRight: 8, // Add space to the right of the text
+    color: '#FFFFFF',
+    fontWeight: '600',
+    fontSize: 16,
   },
   icon: {
     marginLeft: 8, // Add space to the right of the icon

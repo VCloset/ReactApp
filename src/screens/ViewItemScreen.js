@@ -29,6 +29,11 @@ const ViewItemScreen = ({ route }) => {
       setEditedItemDescription(response.data.description);
       setIsLoading(false);
     } catch (error) {
+      if (err.response.status === 401) {
+        await SecureStore.deleteItemAsync('accessToken');
+        await SecureStore.deleteItemAsync('refreshToken');
+        navigation.navigate('Login');
+      }
       console.error('Error fetching item details:', error);
       setIsLoading(false);
     }

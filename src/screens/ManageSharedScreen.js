@@ -5,6 +5,7 @@ import axios from 'axios';
 import CustomAnimatedLoading from './components/CustomAnimatedLoading';
 import Swipeout from 'react-native-swipeout';
 import { useFocusEffect } from '@react-navigation/native';
+import ImagesLoading from './components/ImagesLoading';
 
 const ManageSharedScreen = () => {
   const [closetAccess, setClosetAccess] = useState([]);
@@ -55,6 +56,11 @@ const ManageSharedScreen = () => {
       // Refresh the list after successful revocation
       getSharedClosets();
     } catch (error) {
+      if (error.response.status === 401) {
+        await SecureStore.deleteItemAsync('accessToken');
+        await SecureStore.deleteItemAsync('refreshToken');
+        navigation.navigate('Login');
+      }
       console.error(error);
       Alert.alert('Error', 'Failed to revoke access.');
     }
@@ -63,13 +69,13 @@ const ManageSharedScreen = () => {
   return (
     <View style={styles.container}>
       {isLoading ? (
-        <CustomAnimatedLoading />
+        <ImagesLoading />
       ) : (
         <View>
-          {usersWithAccess.length === 0 && (
+          {closetAccess.length === 0 && (
             <Text style={styles.title}>No users have access to your closet</Text>
           )}
-          {usersWithAccess.length > 0 && (
+          {closetAccess.length > 0 && (
             <FlatList
               data={closetAccess}
               keyExtractor={(item) => item.id.toString()}
@@ -108,6 +114,7 @@ const ManageSharedScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    top: 20,
     padding: 16,
     backgroundColor: '#f0f0f0',
   },

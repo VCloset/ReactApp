@@ -98,6 +98,11 @@ const OutfitMatchingScreen = () => {
       setOutfits(outfitsWithImages);
       setLoading(false);
     } catch (error) {
+      if (err.response.status === 401) {
+        await SecureStore.deleteItemAsync('accessToken');
+        await SecureStore.deleteItemAsync('refreshToken');
+        navigation.navigate('Login');
+      }
       console.error('Error fetching outfits:', error.response ? error.response.data : error.message);
       setLoading(false);
     }

@@ -189,7 +189,6 @@ const filteredItems = () => {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      console.log('Success');
     } catch (error) {
       console.error('Error generating outfits:', error);
     }
@@ -214,6 +213,7 @@ const filteredItems = () => {
     >
       <TouchableOpacity
         style={styles.deleteButton}
+        activeOpacity={0.7}
         onPress={(e) => {
           e.stopPropagation();
           Alert.alert(
@@ -239,6 +239,7 @@ const filteredItems = () => {
         <AntDesign name="delete" size={20} color="#FFF" />
       </TouchableOpacity>
       <TouchableOpacity
+      
         onPress={() => {
           navigation.navigate('ViewItem', { item_id: item.id });
         }}
@@ -257,7 +258,6 @@ const filteredItems = () => {
   return (
     <View style={styles.container}>
        {renderFilterButtons()}
-      {/* <Header title="My Collection" /> */}
       {loading ? (
         <View style={styles.loaderContainer}>
         <ImagesLoading />
@@ -288,20 +288,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 20,
+    marginTop: -50,
   },
   filterButton: {
     flex: 1,
     alignItems: 'center',
     padding: 10,
-    borderColor: '#FF6B6B',
+    borderColor: '#E0E0E0',
     borderWidth: 1,
     borderRadius: 10,
   },
   selectedFilter: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#E0E0E0',
   },
   filterText: {
-    color: '#FF6B6B',
+    color: '#606060',
   },
   selectedFilterText: {
     color: '#FFF',
@@ -309,9 +310,9 @@ const styles = StyleSheet.create({
   
   container: {
     flex: 1,
-    backgroundColor: '#F7F3E8',
-    paddingHorizontal: 20,
-    paddingTop: 20,
+    backgroundColor: '#FFFFFF', // Clean background
+    paddingHorizontal: 15, // Consistent spacing from the edges
+    paddingTop: Platform.OS === 'ios' ? 60 : 20, // Adjusting for the platform
   },
   header: {
     backgroundColor: '#FF6B6B',
@@ -333,15 +334,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 30,
   },
   emptyImage: {
     width: 200,
     height: 200,
     marginBottom: 20,
+    tintColor: '#B0B0B0', 
   },
   emptyText: {
-    fontSize: 16,
-    marginBottom: 20,
+    fontSize: 18, // Slightly larger text
+    color: '#A9A9A9', // Subtle text color
+    textAlign: 'center', // Centered message
+    marginBottom: 15, // Balanced spacing
   },
   button: {
     backgroundColor: '#FF6B6B',
@@ -370,10 +375,8 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 10,
     borderRadius: 10,
-    backgroundColor: '#FFE4B5',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 10,
+    backgroundColor: '#F8F8F8', // Lighter container background
+    // Removed alignItems and justifyContent to allow default stretching
   },
   deleteButton: {
     position: 'absolute',
@@ -386,14 +389,16 @@ const styles = StyleSheet.create({
   },
   itemImage: {
     width: '100%',
-    height: 160,
-    borderRadius: 10,
+    height: undefined, // Allowing the image to define its own aspect ratio
+    aspectRatio: 1, // But if not, keeping a square aspect ratio
+    borderRadius: 10, // Softening the edges
+    marginBottom: 10, // Space between image and text
   },
   itemName: {
     fontSize: 16,
     textAlign: 'center',
     marginTop: 10,
-    color: '#333',
+    color: '#404040',
     fontWeight: 'bold',
   },
 });

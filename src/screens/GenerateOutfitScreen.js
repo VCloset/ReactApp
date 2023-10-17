@@ -121,6 +121,11 @@ const GenerateOutfitScreen = () => {
 
       setLoading(false);
     } catch (error) {
+      if (err.response.status === 401) {
+        await SecureStore.deleteItemAsync('accessToken');
+        await SecureStore.deleteItemAsync('refreshToken');
+        navigation.navigate('Login');
+      }
       console.error('Error generating outfit:', error.response.data);
       showSnackBar('Error generating outfit');
     }
@@ -154,6 +159,11 @@ const GenerateOutfitScreen = () => {
         showSnackBar('Outfit Saved!');
       }
     } catch (error) {
+      if (err.response.status === 401) {
+        await SecureStore.deleteItemAsync('accessToken');
+        await SecureStore.deleteItemAsync('refreshToken');
+        navigation.navigate('Login');
+      }
       console.error('Error saving outfit:', error.response.data);
       showSnackBar('Error saving outfit');
     }

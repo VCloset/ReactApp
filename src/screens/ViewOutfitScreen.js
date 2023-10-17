@@ -35,6 +35,11 @@ const ViewOutfitScreen = ({ route }) => {
         console.error('Unexpected response status:', response.status);
       }
     } catch (error) {
+      if (err.response.status === 401) {
+        await SecureStore.deleteItemAsync('accessToken');
+        await SecureStore.deleteItemAsync('refreshToken');
+        navigation.navigate('Login');
+      }
       console.error('Error liking outfit:', error.response);
       setIsLiked(false);
     }
