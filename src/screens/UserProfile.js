@@ -180,6 +180,7 @@ function UserProfile() {
 
     if (!result.cancelled) {
       encodeImage(result.uri)
+      
       setSelectedImage(base64Image);
     }
   };
@@ -247,11 +248,11 @@ function UserProfile() {
       <View style={styles.buttonGroup}>
         {isEditing ? (
           <>
-            <TouchableOpacity style={styles.button} onPress={updateUserDetails}>
+            <TouchableOpacity style={[styles.button, styles.editButton]} onPress={updateUserDetails}>
               <Text style={styles.buttonText}>Save</Text>
               <FontAwesome name="check-circle" size={24} color="#fff" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={cancelEditing}>
+            <TouchableOpacity style={[styles.button, styles.logoutButton]} onPress={cancelEditing}>
               <Text style={styles.buttonText}>Cancel</Text>
               <FontAwesome name="times-circle" size={24} color="#fff" />
             </TouchableOpacity>

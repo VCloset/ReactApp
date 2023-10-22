@@ -11,10 +11,12 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.VC"
+      "bundleIdentifier": "ca.sheridancollege.sandh408.VCloset"
     },
     "android": {
       "adaptiveIcon": {

@@ -29,6 +29,10 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { Image } from 'react-native';
 
 // import icons
+// import wardrobeIcon from '../React-VC/src/screens/icons/wardrobe-icon.png'
+// import shareClosetIcon from '../React-VC/src/screens/icons/share-closet-icon.png'
+// import outfitIcon from '../React-VC/src/screens/icons/outfit-icon.png'
+// for Karan only
 import wardrobeIcon from '../VC/src/screens/icons/wardrobe-icon.png'
 import shareClosetIcon from '../VC/src/screens/icons/share-closet-icon.png'
 import outfitIcon from '../VC/src/screens/icons/outfit-icon.png'
@@ -45,7 +49,11 @@ const TopTab = createMaterialTopTabNavigator();
 // Top Tabs for Outfit Section
 function OutfitTopTabs() {
   return (
-    <TopTab.Navigator initialRouteName="OutfitScreen" tabBarOptions={{ showIcon: true, showLabel: true, activeTintColor: '#FF6B6B', inactiveTintColor: '#748c94', labelStyle: { fontSize: 12, fontWeight: 'bold', paddingTop: 50 } }}>
+    <TopTab.Navigator initialRouteName="OutfitScreen" screenOptions={{ showIcon: true, showLabel: true, activeTintColor: '#FF6B6B', inactiveTintColor: '#748c94', labelStyle: { fontSize: 12, fontWeight: 'bold', paddingTop: 50 },
+    tabBarStyle : {
+      paddingTop: 50,
+      },
+     }}>
       <TopTab.Screen name="GenerateOutfit" component={GenerateOutfitScreen} options={{ title: 'Generate' }} headerShown={false} />
       <TopTab.Screen name="OutfitScreen" component={OutfitScreen} options={{ title: 'View' }} />
       <TopTab.Screen name="OutfitsMatching" component={OutfitMatchingScreen} options={{ title: 'Matching' }} />
@@ -56,7 +64,11 @@ function OutfitTopTabs() {
 // Top Tabs for My Collection Section
 function MyCollectionTopTabs() {
   return (
-    <TopTab.Navigator initialRouteName="ItemScreen" tabBarOptions={{ showIcon: true, showLabel: true, activeTintColor: '#FF6B6B', inactiveTintColor: '#748c94', labelStyle: { fontSize: 12, fontWeight: 'bold', paddingTop: 50 } }}>
+    <TopTab.Navigator initialRouteName="ItemScreen" screenOptions={{ showIcon: true, showLabel: true, activeTintColor: '#FF6B6B', inactiveTintColor: '#748c94', labelStyle: { fontSize: 12, fontWeight: 'bold', paddingTop: 50 },
+     tabBarStyle: {
+      paddingTop: 50,
+     },
+     }}>
       <TopTab.Screen name="ItemScreen" component={ItemScreen} options={{ title: 'My Collection' }} headerShown={false} />
       <TopTab.Screen name="ScanItem" component={ScanItemScreen} options={{ title: 'Add Item' }} />
     </TopTab.Navigator>
@@ -65,7 +77,11 @@ function MyCollectionTopTabs() {
 
 function ShareClosetTopTabs() {
   return (
-    <TopTab.Navigator initialRouteName='Share Closet' tabBarOptions={{ showIcon: true, showLabel: true, activeTintColor: '#FF6B6B', inactiveTintColor: '#748c94', labelStyle: { fontSize: 12, fontWeight: 'bold', paddingTop: 50 } }}>
+    <TopTab.Navigator initialRouteName='Share Closet' screenOptions={{ showIcon: true, showLabel: true, activeTintColor: '#FF6B6B', inactiveTintColor: '#748c94', labelStyle: { fontSize: 12, fontWeight: 'bold', paddingTop: 50 },
+      tabBarStyle: {
+       paddingTop: 50,
+      },
+     }}>
       <TopTab.Screen name='Share Closet' component={ShareHomeScreen} options={{ title: 'Share' }} headerShown={false} />
       <TopTab.Screen name='Shared Closets' component={ViewSharedClosets} options={{ title: 'Browse' }} />
       <TopTab.Screen name='Manage Shared Closet' component={ManageSharedScreen} options={{ title: 'Manage' }} />

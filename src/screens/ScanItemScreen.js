@@ -50,11 +50,23 @@ const ScanItemScreen = () => {
 
   useEffect(() => {
     (async () => {
-      MediaLibrary.requestPermissionsAsync();
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      setHasCameraPermission(status === 'granted');
-      const { status2 } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      setHasMediaLibraryPermission(status2 === 'granted');
+      // Request camera permissions
+      const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
+      setHasCameraPermission(cameraPermission.status === 'granted');
+  
+      // Request media library permissions
+      const mediaLibraryPermission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      setHasMediaLibraryPermission(mediaLibraryPermission.status === 'granted');
+  
+      // Check and handle if any permissions were denied
+      if (
+        cameraPermission.status !== 'granted' ||
+        mediaLibraryPermission.status !== 'granted'
+      ) {
+        alert('Sorry, we need camera roll permissions to make this work!');
+      }
+  
+      // Fetch categories
       getCategories();
     })();
   }, []);
@@ -103,10 +115,10 @@ const ScanItemScreen = () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [16, 9],
       quality: 1,
     });
-
+    
     if (!result.canceled) {
       setImage(result.uri);
     }
