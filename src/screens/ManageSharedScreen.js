@@ -3,9 +3,10 @@ import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Alert } from
 import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
 import CustomAnimatedLoading from './components/CustomAnimatedLoading';
-import Swipeout from 'react-native-swipeout';
 import { useFocusEffect } from '@react-navigation/native';
 import ImagesLoading from './components/ImagesLoading';
+import { Swipeable, RectButton } from 'react-native-gesture-handler';
+
 
 const ManageSharedScreen = () => {
   const [closetAccess, setClosetAccess] = useState([]);
@@ -17,6 +18,17 @@ const ManageSharedScreen = () => {
       getSharedClosets();
     }, [])
   );
+
+  // This method renders the swipeable action buttons
+  const renderRightActions = (closetShareId) => {
+    return (
+      <RectButton
+        style={styles.rightAction}
+        onPress={() => handleRevokeAccess(closetShareId)}>
+        <Text style={styles.actionText}>Revoke</Text>
+      </RectButton>
+    );
+  };
 
   const getSharedClosets = async () => {
     const access_token = await SecureStore.getItemAsync('accessToken');
@@ -69,28 +81,26 @@ const ManageSharedScreen = () => {
   return (
     <View style={styles.container}>
       {isLoading ? (
-        <ImagesLoading />
+        <View style={styles.loadingContainer}>
+          <ImagesLoading />
+        </View>
       ) : (
         <View>
           {closetAccess.length === 0 && (
             <Text style={styles.title}>No users have access to your closet</Text>
           )}
           {closetAccess.length > 0 && (
-            <FlatList
+
+            < FlatList
               data={closetAccess}
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => {
                 const user = usersWithAccess.find((u) => u.id === item.user_id);
-                const swipeoutBtns = [
-                  {
-                    text: 'Revoke',
-                    backgroundColor: '#e74c3c',
-                    onPress: () => handleRevokeAccess(item.id),
-                  },
-                ];
 
                 return (
-                  <Swipeout right={swipeoutBtns} autoClose={true}>
+                  <Swipeable
+                    renderRightActions={() => renderRightActions(item.id)} // Passing the closetShareId for the revoke action
+                  >
                     <View style={styles.listItem}>
                       <Image
                         source={{ uri: user ? user.image : null }}
@@ -100,7 +110,7 @@ const ManageSharedScreen = () => {
                         {user ? user.first_name : 'Unknown User'}
                       </Text>
                     </View>
-                  </Swipeout>
+                  </Swipeable>
                 );
               }}
             />
@@ -112,6 +122,11 @@ const ManageSharedScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     top: 20,
@@ -145,6 +160,20 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 18,
     color: '#444',
+  },
+  rightAction: {
+    backgroundColor: '#e74c3c',
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    paddingHorizontal: 25,
+    marginVertical: 12,
+    borderRadius: 8,
+  },
+  actionText: {
+    color: 'white',
+    fontSize: 16,
+    backgroundColor: 'transparent',
+    padding: 10,
   },
 });
 

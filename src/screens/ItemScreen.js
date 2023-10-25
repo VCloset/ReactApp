@@ -180,6 +180,8 @@ const filteredItems = () => {
     }
   };
 
+
+  
   const generateOutfits = async () => {
     const accessToken = await get('accessToken');
 
@@ -190,9 +192,11 @@ const filteredItems = () => {
         },
       });
     } catch (error) {
-      console.error('Error generating outfits:', error);
+    //  pass
+    
     }
   };
+  
 
   const renderItem = ({ item }) => (
     <Animated.View
@@ -241,7 +245,8 @@ const filteredItems = () => {
       <TouchableOpacity
       
         onPress={() => {
-          navigation.navigate('ViewItem', { item_id: item.id });
+          // navigation.navigate('ViewItem', { item_id: item.id });
+          navigation.navigate('ViewItem', { item: item});
         }}
         style={{ width: '100%' }}
       >

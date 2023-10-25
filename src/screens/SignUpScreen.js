@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  KeyboardAvoidingView, 
+  ScrollView
 } from 'react-native';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
@@ -94,6 +96,13 @@ const handleSignUp = async () => {
 
 
   return (
+    <KeyboardAvoidingView 
+    style={{ flex: 1, width: '100%', height: '100%' }}
+    behavior={Platform.OS === "ios" ? "padding" : "height"} 
+    keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+    enabled
+  >
+  <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', width: '100%', margin: 0 }}>
     <LinearGradient
       colors={[colors.backgroundStart, colors.backgroundEnd]}
       style={styles.container}>
@@ -157,6 +166,8 @@ const handleSignUp = async () => {
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
       </Animatable.View>
     </LinearGradient>
+    </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 

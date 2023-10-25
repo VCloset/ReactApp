@@ -106,14 +106,14 @@ const ViewOutfitScreen = ({ route }) => {
             if (response.status === 200) {
               // Successfully deleted
               // You can navigate the user back to the previous screen or perform other actions
-              navigation.navigate('Outfit');
+              navigation.navigate('Outfits');
             } else {
               console.error('Unexpected response status:', response.status);
-              navigation.navigate('Outfit');
+              navigation.navigate('Outfits');
             }
           } catch (error) {
             console.error('Error deleting outfit:', error.response.data);
-            navigation.navigate('Outfit');
+            navigation.navigate('Outfits');
           }
         },
       },

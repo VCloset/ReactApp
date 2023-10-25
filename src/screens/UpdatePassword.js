@@ -1,28 +1,40 @@
-
-import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { useRoute } from '@react-navigation/native';
+
+const colors = {
+  primary: '#007AFF',
+  background: '#FFFFFF',
+  text: '#333333',
+  border: '#E0E0E0',
+};
 
 function UpdatePassword({navigation}) {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const route = useRoute();
-  const userId = route.params.userId;
+  const passwordIsValid = () => {
+    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(newPassword);
+    const hasThreeDigits = (newPassword.match(/\d/g) || []).length >= 3;
+
+    return newPassword.length >= 8 && hasSpecialChar && hasThreeDigits;
+  };
 
   const handleUpdatePassword = async () => {
-    if (newPassword !== confirmPassword) {
-      // Passwords don't match, show an alert
-      Alert.alert(
-        "Password Mismatch",
-        "The passwords you entered do not match. Please try again.",
-        [{ text: "OK" }]
-      );
+    // ... (rest of your code)
+
+    if (!passwordIsValid()) {
+      Alert.alert("Invalid Password", "Please ensure your password is at least 8 characters, contains a special character, and has at least 3 digits.", [{ text: "OK" }]);
       return;
     }
+    if (newPassword !== confirmPassword) {
+      Alert.alert("Password Mismatch", "The passwords you entered do not match. Please try again.", [{ text: "OK" }]);
+      return;
+    }
+
     try {
       const accessToken = await SecureStore.getItemAsync('accessToken');
 
@@ -30,8 +42,8 @@ function UpdatePassword({navigation}) {
       const user_id = userId;
 
       const updatedUserData = {
-    
-        hashed_password: newPassword, // Assuming newPassword is the new hashed password
+
+        hashed_password: newPassword, //  newPassword is the new hashed password
       };
 
       const response = await axios.put(
@@ -69,29 +81,38 @@ function UpdatePassword({navigation}) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>New Password:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="New Password"
-        value={newPassword}
-        onChangeText={(text) => setNewPassword(text)}
-        secureTextEntry={true} // To hide the password input
-      />
-      <Text style={styles.label}>Confirm Password:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm Password"
-        value={confirmPassword}
-        onChangeText={(text) => setConfirmPassword(text)}
-        secureTextEntry={true}
-      />
+      <Text style={styles.title}>Update Password</Text>
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>New Password:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter New Password"
+          value={newPassword}
+          onChangeText={setNewPassword}
+          secureTextEntry={true}
+          placeholderTextColor={colors.border}
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Confirm Password:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Confirm New Password"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureTextEntry={true}
+          placeholderTextColor={colors.border}
+        />
+      </View>
+
       <TouchableOpacity style={styles.button} onPress={handleUpdatePassword}>
         <Text style={styles.buttonText}>Update Password</Text>
       </TouchableOpacity>
 
-      <Text style={styles.label}>Go Back?</Text>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
-        <Text style={styles.buttonText}>Back to User Profile</Text>
+      <TouchableOpacity style={styles.backButton} onPress={() => { navigation.goBack() }}>
+        <Text style={styles.backButtonText}>Cancel</Text>
       </TouchableOpacity>
     </View>
   );
@@ -100,29 +121,59 @@ function UpdatePassword({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    backgroundColor: colors.background,
+    alignItems: 'center',
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: 20,
+  },
+  inputContainer: {
+    width: '100%',
+    marginBottom: 15,
   },
   label: {
     fontSize: 16,
-    marginBottom: 8,
+    marginBottom: 6,
+    color: colors.text,
   },
   input: {
-    height: 40,
-    borderColor: 'gray',
+    height: 50,
+    backgroundColor: colors.background,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    borderColor: colors.border,
     borderWidth: 1,
-    marginBottom: 16,
-    paddingHorizontal: 8,
+    color: colors.text,
   },
   button: {
-    backgroundColor: 'blue',
-    padding: 12,
-    borderRadius: 8,
+    width: '100%',
+    backgroundColor: colors.primary,
+    padding: 15,
+    borderRadius: 5,
     alignItems: 'center',
+    marginTop: 10,
   },
   buttonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  backButton: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  backButtonText: {
+    color: colors.primary,
+    fontSize: 18,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
   },
 });
 
 export default UpdatePassword;
+

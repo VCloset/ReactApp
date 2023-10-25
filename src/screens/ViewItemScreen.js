@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ActivityIndicator, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, Image, StyleSheet, ActivityIndicator, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
+// KeyboardAvoidingView
+import {KeyboardAvoidingView} from 'react-native';
 
 const ViewItemScreen = ({ route }) => {
   const [item, setItem] = useState(null);
@@ -10,30 +12,46 @@ const ViewItemScreen = ({ route }) => {
   const [editedItemName, setEditedItemName] = useState('');
   const [editedItemDescription, setEditedItemDescription] = useState('');
 
+  // Older function that was used to fetch item details from the API based on item_id (deprecated)
   // Function to fetch item details from the API based on item_id
+  // const fetchItemDetails = async () => {
+  //   const access_token = await SecureStore.getItemAsync('accessToken');
+  //   try {
+  //     const item_id = route.params.item_id; // Get item_id from route params
+
+  //     // Replace with your API endpoint
+  //     const response = await axios.get(`https://vcloset.xyz/api/items/${item_id}`, {
+  //       headers: {
+  //         Accept: 'application/json',
+  //         Authorization: 'Bearer ' + access_token,
+  //       },
+  //     });
+
+  //     setItem(response.data);
+  //     setEditedItemName(response.data.name);
+  //     setEditedItemDescription(response.data.description);
+  //     setIsLoading(false);
+  //   } catch (error) {
+  //     if (err.response.status === 401) {
+  //       await SecureStore.deleteItemAsync('accessToken');
+  //       await SecureStore.deleteItemAsync('refreshToken');
+  //       navigation.navigate('Login');
+  //     }
+  //     console.error('Error fetching item details:', error);
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  // Function that retrieves item details from the route params
   const fetchItemDetails = async () => {
     const access_token = await SecureStore.getItemAsync('accessToken');
     try {
-      const item_id = route.params.item_id; // Get item_id from route params
-
-      // Replace with your API endpoint
-      const response = await axios.get(`https://vcloset.xyz/api/items/${item_id}`, {
-        headers: {
-          Accept: 'application/json',
-          Authorization: 'Bearer ' + access_token,
-        },
-      });
-
-      setItem(response.data);
-      setEditedItemName(response.data.name);
-      setEditedItemDescription(response.data.description);
+      const item = route.params.item; // Get item_id from route params
+      setItem(item);
+      setEditedItemName(item.name);
+      setEditedItemDescription(item.description);
       setIsLoading(false);
     } catch (error) {
-      if (err.response.status === 401) {
-        await SecureStore.deleteItemAsync('accessToken');
-        await SecureStore.deleteItemAsync('refreshToken');
-        navigation.navigate('Login');
-      }
       console.error('Error fetching item details:', error);
       setIsLoading(false);
     }
@@ -97,6 +115,13 @@ const ViewItemScreen = ({ route }) => {
   };
 
   return (
+    <KeyboardAvoidingView 
+    style={{ flex: 1 }} 
+    behavior={Platform.OS === "ios" ? "padding" : "height"} 
+    keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+    enabled
+  >
+  <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
     <View style={styles.container}>
       {isLoading ? (
         <ActivityIndicator size="large" color="#007AFF" />
@@ -148,6 +173,8 @@ const ViewItemScreen = ({ route }) => {
         <Text>Error loading item details.</Text>
       )}
     </View>
+  </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 

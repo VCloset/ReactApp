@@ -5,6 +5,9 @@ import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
 import  ImagesLoading  from './components/ImagesLoading';
+import { MaterialCommunityIcons } from '@expo/vector-icons';  // Make sure to install this library
+
+
 
 const OutfitScreen = () => {
   const [outfits, setOutfits] = useState([]);
@@ -76,24 +79,37 @@ const OutfitScreen = () => {
     navigation.navigate('ViewOutfit', { outfit: outfit });
   };
 
-  const renderItem = ({ item }) => {
+  const OutfitCard = ({ outfit, onPress }) => {
     return (
-      <TouchableOpacity onPress={()=>handleOutfitPress(item)}>
-        <View style={styles.outfitContainer}>
-          <View style={styles.itemContainer}>
-            {item.items.map((item) => (
-              <View key={item.id} style={styles.item}>
-                <Image
-                  source={{ uri: `data:image/png;base64,${item.image}` }}
-                  style={styles.itemImage}
-                  resizeMode="contain"
-                />
-              </View>
-            ))}
+      <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
+        <View style={styles.cardContent}>
+          {outfit.items.map((item, index) => (
+            <View style={styles.imageContainer} key={index}>
+              <Image
+                source={{ uri: `data:image/png;base64,${item.image}` }}
+                style={styles.cardImage}
+                resizeMode="contain"
+              />
+            </View>
+          ))}
+          {/* <Text style={styles.cardDescription}>{outfit.description}</Text> */}
+          <View style={styles.tagContainer}>
+            <MaterialCommunityIcons
+              name={outfit.tags.includes(3) ? 'robot' : 'account'}
+              size={16}
+              color={outfit.tags.includes(3) ? 'blue' : 'green'}
+            />
+            <Text style={styles.tagText}>
+              {outfit.tags.includes(3) ? 'AI Generated' : 'User Generated'}
+            </Text>
           </View>
         </View>
       </TouchableOpacity>
-    );
+      );
+  };
+  
+  const renderItem = ({ item }) => {
+    return <OutfitCard outfit={item} onPress={() => handleOutfitPress(item)} />;
   };
 
   if (loading) {
@@ -126,12 +142,54 @@ const OutfitScreen = () => {
       data={outfits}
       renderItem={renderItem}
       keyExtractor={(item) => item.id.toString()}
-      numColumns={3}
+      numColumns={2}
     />
   );
 };
 
 const styles = StyleSheet.create({
+  card: {
+    flex: 1,
+    margin: 15,
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    shadowColor: 'black',
+    shadowOffset: { height: 0, width: 0 },
+    elevation: 5,
+  },
+  cardContent: {
+    padding: 10,
+    alignItems: 'center',
+  },
+  imageContainer: {
+    borderColor: '#E0E0E0',
+    borderRadius: 10,
+    padding: -5,
+  },
+  cardImage: {
+    width: 150,
+    height: 150,
+    resizeMode: 'contain',
+  },
+  cardDescription: {
+    padding: 10,
+    fontSize: 16,
+    color: '#333',
+    textAlign: 'center',
+  },
+  tagContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+  tagText: {
+    marginLeft: 5,
+    fontSize: 14,
+    color: '#555',
+  },
   outfitContainer: {
     padding: 16,
     borderBottomWidth: 1,

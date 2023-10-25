@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import {
+  SafeAreaView,
   View,
   Text,
   TextInput,
@@ -18,13 +19,15 @@ import * as SecureStore from 'expo-secure-store';
 import { useFocusEffect } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
-
+import { KeyboardAvoidingView } from 'react-native';
 
 const colors = {
   primary: '#007AFF',
-  background: '#FFFFFF',  // Changed to pure white for a cleaner look
+  secondary: '#FF5733',  // Added a secondary color for cancel or delete actions
+  background: '#FFFFFF',
   text: '#333333',
-  border: '#E0E0E0',  // New border color for inputs and buttons
+  border: '#E0E0E0',
+  editableBackground: '#F5F5F5'  // Background color for editable fields
 };
 
 function UserProfile() {
@@ -160,137 +163,129 @@ function UserProfile() {
     }
 
     const result = await ImagePicker.launchCameraAsync();
-
+    const uri = result.assets.map(x => x.uri).toString()
     if (!result.cancelled) {
-      encodeImage(result.uri);
+      encodeImage(uri);
       setSelectedImage(base64Image);
     }
   };
 
-  const pickImageFromLibrary = async () => {
-    setIsEditing(true)
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  const handleLogout = async () => {
+    await SecureStore.deleteItemAsync('accessToken');
+    await SecureStore.deleteItemAsync('sessionId');
+    navigation.navigate('Login');
 
-    if (permissionResult.granted === false) {
-      alert('Media Library permission is required to select an image.');
-      return;
-    }
+    const pickImageFromLibrary = async () => {
+      setIsEditing(true)
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    const result = await ImagePicker.launchImageLibraryAsync();
+      if (permissionResult.granted === false) {
+        alert('Media Library permission is required to select an image.');
+        return;
+      }
 
-    if (!result.cancelled) {
-      encodeImage(result.uri)
-      
-      setSelectedImage(base64Image);
-    }
+      const result = await ImagePicker.launchImageLibraryAsync();
+
+      if (!result.cancelled) {
+        encodeImage(result.uri)
+
+        setSelectedImage(base64Image);
+      }
+    };
   };
 
-  const encodeImage = async (uri) => {
-    const response = await fetch(uri);
-    const blob = await response.blob();
+    const encodeImage = async (uri) => {
+      const response = await fetch(uri);
+      const blob = await response.blob();
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      setBase64Image(reader.result);
+      const reader = new FileReader();
+      reader.onload = () => {
+        setBase64Image(reader.result);
+      };
+
+      reader.readAsDataURL(blob);
+      return reader.result;
     };
 
-    reader.readAsDataURL(blob);
-    return reader.result;
-  };
-
-  return (
-    <ScrollView style={styles.container}> 
-    {/* <View style={styles.container}> */}
-      <TouchableOpacity onPress={openImagePicker} style={styles.imageContainer}>
-        {selectedImage ? (
-          <Image
-            source={{ uri: selectedImage }}
-            style={styles.profileImage}
-            resizeMode="cover"
-          />
-        ) : (
-          <View style={styles.placeholderImage}>
-            <FontAwesome name="camera" size={40} color={colors.primary} />
-            <Text style={styles.placeholderText}>Select an image</Text>
-          </View>
-        )}
-      </TouchableOpacity>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Username:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Username"
-          value={userData.username}
-          onChangeText={(text) => setUserData((prevState) => ({ ...prevState, username: text }))}
-          editable={isEditing}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>First Name:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="First Name"
-          value={userData.first_name}
-          onChangeText={(text) => setUserData((prevState) => ({ ...prevState, first_name: text }))}
-          editable={isEditing}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Last Name:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Last Name"
-          value={userData.last_name}
-          onChangeText={(text) => setUserData((prevState) => ({ ...prevState, last_name: text }))}
-          editable={isEditing}
-        />
-      </View>
-      <View style={styles.buttonGroup}>
-        {isEditing ? (
-          <>
-            <TouchableOpacity style={[styles.button, styles.editButton]} onPress={updateUserDetails}>
-              <Text style={styles.buttonText}>Save</Text>
-              <FontAwesome name="check-circle" size={24} color="#fff" />
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.button, styles.logoutButton]} onPress={cancelEditing}>
-              <Text style={styles.buttonText}>Cancel</Text>
-              <FontAwesome name="times-circle" size={24} color="#fff" />
-            </TouchableOpacity>
-          </>
-        ) : (
-          <>
-          <TouchableOpacity
-              style={[styles.button, styles.editButton]}  // Apply multiple styles
-              onPress={() => setIsEditing(true)}
-            >
-              <Text style={styles.buttonText}>Edit</Text>
-              <FontAwesome name="pencil" size={24} color="#fff" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.button, styles.logoutButton]}  // New logout button
-              onPress={() => {
-                SecureStore.deleteItemAsync('accessToken');
-                SecureStore.deleteItemAsync('refreshToken');
-                navigation.navigate('Login');
-              }
-              }
-            >
-              <Text style={styles.buttonText}>Logout</Text>
-              <FontAwesome name="sign-out" size={24} color="#fff" />
-            </TouchableOpacity>
-          </>
-        )}
-      </View>
-      <View style={styles.container}>
-        <TouchableOpacity style={styles.smallButton} onPress={handleUpdatePassword}>
-          <Text style={styles.smallButtonText}>Change Password</Text>
+    return (
+<SafeAreaView style={{ flex: 1 }}>
+      <ScrollView style={styles.container}>
+        <TouchableOpacity onPress={openImagePicker} style={styles.imageContainer}>
+          {selectedImage ? (
+            <Image
+              source={{ uri: selectedImage }}
+              style={styles.profileImage}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={styles.placeholderImage}>
+              <FontAwesome name="camera" size={40} color={colors.primary} />
+              <Text style={styles.placeholderText}>Tap to Add Profile Picture</Text>
+            </View>
+          )}
         </TouchableOpacity>
-      </View>
-    {/* </View>
-     */}
-    </ScrollView>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Username:</Text>
+          <TextInput
+            style={[styles.input, isEditing ? styles.editableInput : null]}
+            placeholder="Username"
+            value={userData.username}
+            onChangeText={(text) => setUserData((prevState) => ({ ...prevState, username: text }))}
+            editable={false}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>First Name:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="First Name"
+            value={userData.first_name}
+            onChangeText={(text) => setUserData((prevState) => ({ ...prevState, first_name: text }))}
+            editable={isEditing}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Last Name:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Last Name"
+            value={userData.last_name}
+            onChangeText={(text) => setUserData((prevState) => ({ ...prevState, last_name: text }))}
+            editable={isEditing}
+          />
+        </View>
+        <View style={styles.buttonGroup}>
+          {isEditing ? (
+            <>
+              <TouchableOpacity style={[styles.button, styles.saveButton]} onPress={updateUserDetails}>
+                <Text style={styles.buttonText}>Save</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={cancelEditing}>
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <TouchableOpacity style={[styles.button, styles.editButton]} onPress={() => setIsEditing(true)}>
+              <Text style={styles.buttonText}>Edit</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+        <View style={styles.container}>
+          <TouchableOpacity style={styles.smallButton} onPress={handleUpdatePassword}>
+            <Text style={styles.smallButtonText}>Change Password</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, styles.logoutButton]}
+            onPress={handleLogout}>
+            <Text style={styles.buttonText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
 
-  );
+      </ScrollView>
+      </SafeAreaView>
+
+    );
+  
 }
 
 
@@ -298,19 +293,20 @@ function UserProfile() {
 
 
 const styles = StyleSheet.create({
+  
   buttonGroup: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 20,  // New style for better spacing
   },
   logoutButton: {
+    marginTop: 20,  // New style for better spacing
     backgroundColor: '#FF6347',
   },
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    paddingHorizontal: 24, // More padding to give elements more room to breathe
-    paddingTop: 40, // Additional safe area top padding
+    paddingHorizontal: 15,
   },
   imageContainer: {
     alignSelf: 'center',
@@ -422,6 +418,15 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginLeft: 8, // Add space to the right of the icon
+  },
+  editableInput: {
+    backgroundColor: colors.editableBackground,
+  },
+  saveButton: {
+    backgroundColor: colors.primary,
+  },
+  cancelButton: {
+    backgroundColor: colors.secondary,
   },
 });
 

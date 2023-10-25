@@ -8,6 +8,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import ImagesLoading from './components/ImagesLoading';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { AntDesign } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -40,10 +42,12 @@ const OutfitMatchingScreen = () => {
     setLoading(true); // Set loading to true to show loading indicator
     setOutfits([]); // Clear outfits
     fetchOutfits(); // Fetch outfits again
+    setCurrentIndex(0); // Reset currentIndex
   };
 
   const translateX = useRef(new Animated.Value(0)).current;
   const panGestureRef = useRef(null);
+  const navigation = useNavigation();
 
   const rotate = translateX.interpolate({
     inputRange: [-windowWidth / 2, 0, windowWidth / 2],
@@ -94,6 +98,35 @@ const OutfitMatchingScreen = () => {
           return { ...outfit, items: itemsWithImages };
         })
       );
+        
+        // if any of the outfits have no items or only one item or both item have the same category id, remove them from the list and add them to the removeOutfits array
+      const removeOutfits = [];
+
+      outfitsWithImages.forEach((outfit) => {
+        
+        if (outfit.items.length === 0 || outfit.items.length === 1) {
+          removeOutfits.push(outfit);
+          const index = outfitsWithImages.indexOf(outfit);
+          outfitsWithImages.splice(index, 1);
+        }
+        else if (outfit.items[0].category_id === outfit.items[1].category_id) {
+          removeOutfits.push(outfit);
+          const index = outfitsWithImages.indexOf(outfit);
+          outfitsWithImages.splice(index, 1);
+        }
+      });
+
+      
+      
+      // delete outfit call to remove outfits with no items or only one item
+      removeOutfits.forEach((outfit) => {
+        deleteOutfit(outfit.id);
+      });
+
+
+
+
+
 
       setOutfits(outfitsWithImages);
       setLoading(false);
@@ -105,6 +138,27 @@ const OutfitMatchingScreen = () => {
       }
       console.error('Error fetching outfits:', error.response ? error.response.data : error.message);
       setLoading(false);
+    }
+  };
+
+  // delete outfit call 
+  const deleteOutfit = async (id) => {
+    // Display a confirmation dialog
+
+    try {
+      console.log('Deleting outfit...');
+      const accessToken = await SecureStore.getItemAsync('accessToken');
+      const response = await axios.delete( // Use DELETE method
+        `https://vcloset.xyz/api/outfits/${id}`,
+        {
+          headers: {
+            Authorization: 'Bearer ' + accessToken,
+            accept: 'application/json',
+          },
+        }
+      );
+    } catch (error) {
+      console.error('Error deleting outfit:', error.response.data);
     }
   };
 
@@ -203,13 +257,13 @@ const OutfitMatchingScreen = () => {
 
 
     <View style={styles.container}>
-    <View style={{ position: 'absolute', top: 20, right: 20 }}>
+      <View style={{ position: 'absolute', top: 20, right: 20 }}>
 
-      <TouchableOpacity style={styles.refreshButton} onPress={handleRefresh}>
-        {/* Use the refresh icon */}
-        <AntDesign name="reload1" size={24} color="white" />
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity style={styles.refreshButton} onPress={handleRefresh}>
+          {/* Use the refresh icon */}
+          <AntDesign name="reload1" size={24} color="white" />
+        </TouchableOpacity>
+      </View>
       {loading ? (
         <ImagesLoading />
       ) : outfits.length > 0 && currentIndex < outfits.length ? (
