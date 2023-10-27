@@ -32,13 +32,9 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { Image } from 'react-native';
 
 // import icons
-import wardrobeIcon from '../React-VC/src/screens/icons/wardrobe-icon.png'
-import shareClosetIcon from '../React-VC/src/screens/icons/share-closet-icon.png'
-import outfitIcon from '../React-VC/src/screens/icons/outfit-icon.png'
-// for Karan only
-// import wardrobeIcon from '../VC/src/screens/icons/wardrobe-icon.png'
-// import shareClosetIcon from '../VC/src/screens/icons/share-closet-icon.png'
-// import outfitIcon from '../VC/src/screens/icons/outfit-icon.png'
+import wardrobeIcon from './src/screens/icons/wardrobe-icon.png'
+import shareClosetIcon from './src/screens/icons/share-closet-icon.png'
+import outfitIcon from './src/screens/icons/outfit-icon.png'
 import { BlurView } from 'expo-blur';
 // import ant design icons
 import { AntDesign } from '@expo/vector-icons';
