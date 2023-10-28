@@ -1,0 +1,11 @@
+	<key>NSCameraUsageDescription</key>
+	<string>Allow $(PRODUCT_NAME) to access your camera to take photos of your clothing items and add them to your virtual closet. For example, snap a picture of your new jacket and save it in the app.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Allow $(PRODUCT_NAME) to access your microphone to enable voice commands for easier navigation.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Allow $(PRODUCT_NAME) to save photos to your library for a seamless experience. For instance, when you create a new item, the app can save it to your closet.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow $(PRODUCT_NAME) to access your photos to import clothing items into your virtual closet. For example, select photos of clothes from your library to add them to the app.</string>
+	<key>UILaunchStoryboardName</key>
+	<string>SplashScreen</string>
+	<key>UIRequiredDeviceCapabilities</key>
