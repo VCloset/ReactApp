@@ -18,6 +18,9 @@ import { AntDesign } from '@expo/vector-icons'; // Import icons library
 import { Alert } from 'react-native';
 import ImagesLoading from './components/ImagesLoading';
 
+// async storage
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 async function get(key) {
   return await SecureStore.getItemAsync(key);
 }
@@ -175,6 +178,12 @@ const filteredItems = () => {
       }).start();
 
       setLoading(false);
+
+      // save items to async storage
+      
+      await AsyncStorage.setItem('items', JSON.stringify(response.data));
+
+
     } catch (error) {
       console.error('Error fetching items:', error);
     }

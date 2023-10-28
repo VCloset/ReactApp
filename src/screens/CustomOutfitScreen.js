@@ -22,6 +22,7 @@ import { FontAwesome } from '@expo/vector-icons'; // Import FontAwesome icons
 import { Dimensions } from 'react-native';
 // focus effect
 import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -148,20 +149,28 @@ const CustomOutfitScreen = () => {
     const accessToken = await SecureStore.getItemAsync('accessToken');
 
     try {
-      const response = await axios.get('https://vcloset.xyz/api/items', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      // const response = await axios.get('https://vcloset.xyz/api/items', {
+      //   headers: {
+      //     Authorization: `Bearer ${accessToken}`,
+      //   },
+      // });
 
-      setItems(response.data);
-      setTops(response.data.filter(item => item.category.title === 'Tops'));
-      setBottoms(response.data.filter(item => item.category.title === 'Bottoms'));
+      const items2 = await AsyncStorage.getItem('items');
+      const response = JSON.parse(items2);
+      
 
-      const bottoms = response.data.filter(
+      // setItems(response.data);
+      // setTops(response.data.filter(item => item.category.title === 'Tops'));
+      // setBottoms(response.data.filter(item => item.category.title === 'Bottoms'));
+
+      setItems(response);
+      setTops(response.filter(item => item.category.title === 'Tops'));
+      setBottoms(response.filter(item => item.category.title === 'Bottoms'));
+
+      const bottoms = response.filter(
         (x) => x.category.title === 'Bottoms'
       );
-      const tops = response.data.filter((x) => x.category.title === 'Tops');
+      const tops = response.filter((x) => x.category.title === 'Tops');
 
       setTopsCount(tops.length);
       setBottomsCount(bottoms.length);

@@ -4,9 +4,9 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
-import  ImagesLoading  from './components/ImagesLoading';
+import ImagesLoading from './components/ImagesLoading';
 import { MaterialCommunityIcons } from '@expo/vector-icons';  // Make sure to install this library
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const OutfitScreen = () => {
@@ -30,7 +30,18 @@ const OutfitScreen = () => {
         outfit.items.sort((a, b) => a.category_id - b.category_id);
       });
 
-      const getItems = async (outfit) => {
+      // const getItems = async (outfit) => {
+      //   const itemsRes = await axios.get(`https://vcloset.xyz/api/items`, {
+      //     headers: {
+      //       Authorization: 'Bearer ' + accessToken,
+      //       accept: 'application/json',
+      //     },
+      //   });
+      //   return itemsRes.data;
+      // };
+      // const items = await getItems();
+
+      const getItems = async () => {
         const itemsRes = await axios.get(`https://vcloset.xyz/api/items`, {
           headers: {
             Authorization: 'Bearer ' + accessToken,
@@ -39,7 +50,18 @@ const OutfitScreen = () => {
         });
         return itemsRes.data;
       };
-      const items = await getItems();
+
+      // wait for items to be fetched
+      const items2 = await AsyncStorage.getItem('items');
+      const items = JSON.parse(items2);
+      
+      if (items.length === 0) {
+        
+          items = await getItems();
+        
+      }
+      
+      
 
       const outfitsWithImages = await Promise.all(
         savedOutfits.map(async (outfit) => {
@@ -56,21 +78,20 @@ const OutfitScreen = () => {
       setOutfits(outfitsWithImages);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching outfits:', error.response);
+      console.error('Error fetching outfits:', error);
       setLoading(false);
     }
   };
-  
+
   useFocusEffect(
     React.useCallback(() => {
-        fetchOutfits();
+
+      fetchOutfits();
     }, [])
-);
+  );
 
 
   useEffect(() => {
-    
-
     fetchOutfits();
   }, []);
 
@@ -105,9 +126,9 @@ const OutfitScreen = () => {
           </View>
         </View>
       </TouchableOpacity>
-      );
+    );
   };
-  
+
   const renderItem = ({ item }) => {
     return <OutfitCard outfit={item} onPress={() => handleOutfitPress(item)} />;
   };
