@@ -23,11 +23,11 @@ import { KeyboardAvoidingView } from 'react-native';
 
 const colors = {
   primary: '#007AFF',
-  secondary: '#FF5733',  // Added a secondary color for cancel or delete actions
-  background: '#FFFFFF',
+  secondary: '#FF5733',
+  background: '#f7f8fa',  // Slightly different background for a soft look
   text: '#333333',
   border: '#E0E0E0',
-  editableBackground: '#F5F5F5'  // Background color for editable fields
+  editableBackground: '#FFFFFF'  // Pure white for editable fields for better focus
 };
 
 function UserProfile() {
@@ -70,7 +70,7 @@ function UserProfile() {
       setSelectedImage(response.data[0].image);
 
     } catch (error) {
-      if (err.response.status === 401) {
+      if (error.response.status === 401) {
         await SecureStore.deleteItemAsync('accessToken');
         await SecureStore.deleteItemAsync('refreshToken');
         navigation.navigate('Login');
@@ -105,7 +105,7 @@ function UserProfile() {
       console.log('User details updated:', response.data);
       setIsEditing(false);
     } catch (error) {
-      if (err.response.status === 401) {
+      if (error.response.status === 401) {
         await SecureStore.deleteItemAsync('accessToken');
         await SecureStore.deleteItemAsync('refreshToken');
         navigation.navigate('Login');
@@ -174,41 +174,185 @@ function UserProfile() {
     await SecureStore.deleteItemAsync('accessToken');
     await SecureStore.deleteItemAsync('sessionId');
     navigation.navigate('Login');
-
-    const pickImageFromLibrary = async () => {
-      setIsEditing(true)
-      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-      if (permissionResult.granted === false) {
-        alert('Media Library permission is required to select an image.');
-        return;
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync();
-
-      if (!result.cancelled) {
-        encodeImage(result.uri)
-
-        setSelectedImage(base64Image);
-      }
-    };
   };
 
-    const encodeImage = async (uri) => {
-      const response = await fetch(uri);
-      const blob = await response.blob();
+  const pickImageFromLibrary = async () => {
+    setIsEditing(true)
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        setBase64Image(reader.result);
-      };
+    if (permissionResult.granted === false) {
+      alert('Media Library permission is required to select an image.');
+      return;
+    }
 
-      reader.readAsDataURL(blob);
-      return reader.result;
+    const result = await ImagePicker.launchImageLibraryAsync();
+
+    if (!result.cancelled) {
+      encodeImage(result.uri)
+
+      setSelectedImage(base64Image);
+    }
+  };
+
+  const encodeImage = async (uri) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setBase64Image(reader.result);
     };
 
-    return (
-<SafeAreaView style={{ flex: 1 }}>
+    reader.readAsDataURL(blob);
+    return reader.result;
+  };
+
+  const deleteAccount = async () => {
+    const accessToken = await SecureStore.getItemAsync('accessToken');
+    // alert the user to confirm the deletion
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to delete your account?, this is irreversible',
+      [
+        {
+          text: 'Yes',
+          onPress: () => {
+            // delete the account
+            // get the user id
+            const userId = userData.id;
+            // delete the user
+            // headers for authorization
+           
+            console.log('Access token:', accessToken);
+            axios.delete(`https://vcloset.xyz/api/users/${userId}` 
+            , {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            })
+              .then((response) => {
+                console.log('User deleted:', response.data);
+                // delete the access token
+                SecureStore.deleteItemAsync('accessToken');
+                SecureStore.deleteItemAsync('sessionId');
+
+                // navigate to the login screen
+                navigation.navigate('Login');
+              })
+              .catch((error) => {
+                Alert.alert(
+                  'Error',
+                  'There was an error deleting your account, please try again later. If the problem persists, please contact support at sandhukaran219@gmail.com.',
+                  [
+                    {
+                      text: 'OK',
+                      onPress: () => console.log('OK Pressed'),
+                    },
+                  ],
+                  { cancelable: false }
+                );
+                console.error('Error deleting user:', error.response.data);
+              });
+          },
+        },
+        {
+          text: 'No',
+          style: 'cancel',
+        },
+      ],
+      { cancelable: false }
+    );
+  }
+
+  // return (
+  //   <SafeAreaView style={{ flex: 1 }}>
+  //     <ScrollView style={styles.container}>
+  //       <TouchableOpacity onPress={openImagePicker} style={styles.imageContainer}>
+  //         {selectedImage ? (
+  //           <Image
+  //             source={{ uri: selectedImage }}
+  //             style={styles.profileImage}
+  //             resizeMode="cover"
+  //           />
+  //         ) : (
+  //           <View style={styles.placeholderImage}>
+  //             <FontAwesome name="camera" size={40} color={colors.primary} />
+  //             <Text style={styles.placeholderText}>Tap to Add Profile Picture</Text>
+  //           </View>
+  //         )}
+  //       </TouchableOpacity>
+  //       <View style={styles.inputContainer}>
+  //         <Text style={styles.label}>Username:</Text>
+  //         <TextInput
+  //           style={[styles.input, isEditing ? styles.editableInput : null]}
+  //           placeholder="Username"
+  //           value={userData.username}
+  //           onChangeText={(text) => setUserData((prevState) => ({ ...prevState, username: text }))}
+  //           editable={false}
+  //         />
+  //       </View>
+  //       <View style={styles.inputContainer}>
+  //         <Text style={styles.label}>First Name:</Text>
+  //         <TextInput
+  //           style={styles.input}
+  //           placeholder="First Name"
+  //           value={userData.first_name}
+  //           onChangeText={(text) => setUserData((prevState) => ({ ...prevState, first_name: text }))}
+  //           editable={isEditing}
+  //         />
+  //       </View>
+  //       <View style={styles.inputContainer}>
+  //         <Text style={styles.label}>Last Name:</Text>
+  //         <TextInput
+  //           style={styles.input}
+  //           placeholder="Last Name"
+  //           value={userData.last_name}
+  //           onChangeText={(text) => setUserData((prevState) => ({ ...prevState, last_name: text }))}
+  //           editable={isEditing}
+  //         />
+  //       </View>
+  //       <View style={styles.buttonGroup}>
+  //         {isEditing ? (
+  //           <>
+  //             <TouchableOpacity style={[styles.button, styles.saveButton]} onPress={updateUserDetails}>
+  //               <Text style={styles.buttonText}>Save</Text>
+  //             </TouchableOpacity>
+  //             <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={cancelEditing}>
+  //               <Text style={styles.buttonText}>Cancel</Text>
+  //             </TouchableOpacity>
+  //           </>
+  //         ) : (
+  //           <TouchableOpacity style={[styles.button, styles.editButton]} onPress={() => setIsEditing(true)}>
+  //             <Text style={styles.buttonText}>Edit</Text>
+  //           </TouchableOpacity>
+  //         )}
+  //       </View>
+  //       <View style={styles.container}>
+  //         <TouchableOpacity style={styles.smallButton} onPress={handleUpdatePassword}>
+  //           <Text style={styles.smallButtonText}>Change Password</Text>
+  //         </TouchableOpacity>
+  //         <TouchableOpacity
+  //           style={[styles.button, styles.logoutButton]}
+  //           onPress={handleLogout}>
+  //           <Text style={styles.buttonText}>Logout</Text>
+  //         </TouchableOpacity>
+  //       </View>
+
+  //       {/* DELETE ACCOUNT BUTTON */}
+
+  //       <View style={styles.buttonContainer}>
+  //         <TouchableOpacity style={[styles.button,styles.deleteButton]} onPress={deleteAccount}>
+  //           <Text style={styles.smallButtonText}>Delete Account</Text>
+  //         </TouchableOpacity>
+  //       </View>
+
+  //     </ScrollView>
+  //   </SafeAreaView>
+
+  // );
+
+   return (
+    <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={styles.container}>
         <TouchableOpacity onPress={openImagePicker} style={styles.imageContainer}>
           {selectedImage ? (
@@ -224,36 +368,15 @@ function UserProfile() {
             </View>
           )}
         </TouchableOpacity>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Username:</Text>
-          <TextInput
-            style={[styles.input, isEditing ? styles.editableInput : null]}
-            placeholder="Username"
-            value={userData.username}
-            onChangeText={(text) => setUserData((prevState) => ({ ...prevState, username: text }))}
-            editable={false}
-          />
+        
+        {/* Input Fields */}
+        <View style={styles.inputGroup}>
+          {renderInput("Username", userData.username, text => setUserData({ ...userData, username: text }), false)}
+          {renderInput("First Name", userData.first_name, text => setUserData({ ...userData, first_name: text }), isEditing)}
+          {renderInput("Last Name", userData.last_name, text => setUserData({ ...userData, last_name: text }), isEditing)}
         </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>First Name:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="First Name"
-            value={userData.first_name}
-            onChangeText={(text) => setUserData((prevState) => ({ ...prevState, first_name: text }))}
-            editable={isEditing}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Last Name:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Last Name"
-            value={userData.last_name}
-            onChangeText={(text) => setUserData((prevState) => ({ ...prevState, last_name: text }))}
-            editable={isEditing}
-          />
-        </View>
+        
+        {/* Buttons */}
         <View style={styles.buttonGroup}>
           {isEditing ? (
             <>
@@ -270,22 +393,35 @@ function UserProfile() {
             </TouchableOpacity>
           )}
         </View>
-        <View style={styles.container}>
-          <TouchableOpacity style={styles.smallButton} onPress={handleUpdatePassword}>
-            <Text style={styles.smallButtonText}>Change Password</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, styles.logoutButton]}
-            onPress={handleLogout}>
-            <Text style={styles.buttonText}>Logout</Text>
-          </TouchableOpacity>
-        </View>
-
+        <TouchableOpacity style={styles.smallButton} onPress={handleUpdatePassword}>
+          <Text style={styles.smallButtonText}>Change Password</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.button, styles.logoutButton]} onPress={handleLogout}>
+          <Text style={styles.buttonText}>Logout</Text>
+        </TouchableOpacity>
+        
+        {/* DELETE ACCOUNT BUTTON */}
+        <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={deleteAccount}>
+          <Text style={styles.smallButtonText}>Delete Account</Text>
+        </TouchableOpacity>
       </ScrollView>
-      </SafeAreaView>
+    </SafeAreaView>
+  );
+}
 
-    );
-  
+function renderInput(label, value, onChange, isEditable) {
+  return (
+    <View style={styles.inputContainer}>
+      <Text style={styles.label}>{label}:</Text>
+      <TextInput
+        style={[styles.input, isEditable && styles.editableInput]}
+        placeholder={label}
+        value={value}
+        onChangeText={onChange}
+        editable={isEditable}
+      />
+    </View>
+  );
 }
 
 
@@ -293,7 +429,7 @@ function UserProfile() {
 
 
 const styles = StyleSheet.create({
-  
+
   buttonGroup: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -306,7 +442,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+    paddingHorizontal: 20,  // More padding for better spacing
+  },
+  buttonContainer: {
+    marginTop: 20,
+    flex: 1,
+    backgroundColor: colors.background,
     paddingHorizontal: 15,
+  },
+  inputGroup: {
+    marginBottom: 20,
   },
   imageContainer: {
     alignSelf: 'center',
@@ -421,11 +566,22 @@ const styles = StyleSheet.create({
   },
   editableInput: {
     backgroundColor: colors.editableBackground,
+    borderColor: colors.primary,
+    elevation: 3,  // Adding shadow for elevation (Android)
+    shadowColor: "#000",  // (iOS)
+    shadowOffset: { width: 0, height: 2 },  // (iOS)
+    shadowOpacity: 0.1,  // (iOS)
+    shadowRadius: 5  // (iOS)
   },
   saveButton: {
     backgroundColor: colors.primary,
   },
   cancelButton: {
+    backgroundColor: colors.secondary,
+  },
+
+  deleteButton: {
+    marginTop: 20,
     backgroundColor: colors.secondary,
   },
 });

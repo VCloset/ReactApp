@@ -84,7 +84,7 @@ const handleSignUp = async () => {
 
       const response = await axios.post('https://vcloset.xyz/signup', json);
 
-      alert('Sign up successful! Please log in.');
+      alert('Account created successfully! Please accept the verification email sent to your email address to activate your account. If you do not receive the email, please check your spam folder or sign up again.');
       navigation.navigate('Login');
   } catch (error) {
       setError('Sign-up failed. Please try again.');

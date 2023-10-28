@@ -121,7 +121,8 @@ const GenerateOutfitScreen = () => {
 
       setLoading(false);
     } catch (error) {
-      if (err.response.status === 401) {
+      setLoading(false);
+      if (error.response.status === 401) {
         await SecureStore.deleteItemAsync('accessToken');
         await SecureStore.deleteItemAsync('refreshToken');
         navigation.navigate('Login');
@@ -159,7 +160,7 @@ const GenerateOutfitScreen = () => {
         showSnackBar('Outfit Saved!');
       }
     } catch (error) {
-      if (err.response.status === 401) {
+      if (error.response.status === 401) {
         await SecureStore.deleteItemAsync('accessToken');
         await SecureStore.deleteItemAsync('refreshToken');
         navigation.navigate('Login');
