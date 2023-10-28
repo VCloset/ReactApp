@@ -19,8 +19,9 @@ import * as Animatable from 'react-native-animatable';
 import CustomAnimatedLoading from './components/CustomAnimatedLoading';
 import ImagesLoading from './components/ImagesLoading';
 import { FontAwesome } from '@expo/vector-icons'; // Import FontAwesome icons
-import { LinearGradient } from 'expo-linear-gradient';
 import { Dimensions } from 'react-native';
+// focus effect
+import { useFocusEffect } from '@react-navigation/native';
 
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -134,8 +135,14 @@ const CustomOutfitScreen = () => {
     fetchItems();
   }, []);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchItems();
+    }, [])
+  );
 
   const fetchItems = async () => {
+    setLoading(true);
 
     console.log('fetching items');
     const accessToken = await SecureStore.getItemAsync('accessToken');
@@ -170,6 +177,7 @@ const CustomOutfitScreen = () => {
 
       setLoading(false);
     } catch (error) {
+      setLoading(false);
       console.error('Error fetching items:', error);
     }
   };
@@ -233,6 +241,8 @@ const CustomOutfitScreen = () => {
 
   return (
     <View style={styles.container}>
+     { !loading && 
+     <>
       <Animatable.View animation='fadeIn' duration={1000}>
         <TouchableOpacity
           style={styles.saveButton}
@@ -322,6 +332,12 @@ const CustomOutfitScreen = () => {
       <SnackBar  visible={snackBarVisible}
         message={snackBarMessage}
         onDismiss={hideSnackBar} />
+        </>
+      }
+      {loading && <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ImagesLoading />
+      </View>
+      }
     </View>
   );
 };
