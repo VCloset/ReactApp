@@ -199,7 +199,21 @@ const ScanItemScreen = () => {
       setImage(uri);
     }
   };
+  
+  const generateOutfits = async () => {
+    const accessToken = await get('accessToken');
 
+    try {
+      await axios.get('https://vcloset.xyz/api/generateOutfitsAll', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+    } catch (error) {
+    //  pass
+    
+    }
+  };
 
   const handleAddItem = async () => {
 
@@ -256,6 +270,8 @@ const ScanItemScreen = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
+
+      generateOutfits();
     } catch (error) {
       console.error('Error adding item:', error);
     } finally {
