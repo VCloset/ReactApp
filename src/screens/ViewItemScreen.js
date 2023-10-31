@@ -83,7 +83,7 @@ const ViewItemScreen = ({ route }) => {
 
     try {
       const access_token = await SecureStore.getItemAsync('accessToken');
-      const item_id = route.params.item_id;
+      const item_id = item.id;
       const array = []
       array.push(parseInt(item.tags))
       const response = await axios.put(
@@ -106,6 +106,8 @@ const ViewItemScreen = ({ route }) => {
       
       item.name = editedItemName;
       item.description = editedItemDescription;
+
+      
   
     } catch (error) {
       console.error('Error saving item:', error.response.data);

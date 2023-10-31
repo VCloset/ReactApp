@@ -79,11 +79,11 @@ const ItemScreen = () => {
     }, [])
   );
 
-  useEffect(() => {
-    if (bottomsCount >= 3 && topsCount >= 3) {
-      generateOutfits();
-    }
-  }, [bottomsCount, topsCount]);
+  // useEffect(() => {
+  //   if (bottomsCount >= 3 && topsCount >= 3) {
+  //     generateOutfits();
+  //   }
+  // }, [bottomsCount, topsCount]);
 
   const renderFilterButtons = () => (
     <View style={styles.filterContainer}>
@@ -298,6 +298,7 @@ const filteredItems = () => {
 };
 
 const styles = StyleSheet.create({
+  
   filterContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',

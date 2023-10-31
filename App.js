@@ -220,7 +220,6 @@ const App = () => {
         const credentials = await Keychain.getGenericPassword();
         if (credentials) {
           setSessionID(credentials.password);  // This updates the sessionID state
-          renewAccessToken(credentials.password);  // This renews the access token
         }
       } catch (error) {
         await Keychain.resetGenericPassword();
@@ -248,6 +247,8 @@ const App = () => {
     const checkSessionAndNavigate = () => {
       if (sessionID) {
         // Navigate to the home screen or dashboard as there's an active session
+
+        renewAccessToken(sessionID);  // This renews the access token
         navigationRef.current?.navigate('HomeLogin');
       } else {
         // If not, we navigate to the login screen

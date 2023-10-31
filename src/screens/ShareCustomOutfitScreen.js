@@ -41,7 +41,7 @@ const colors = {
 
 var newOutfit = {};
 
-const CustomOutfitScreen = () => {
+const ShareCustomOutfitScreen = () => {
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -142,6 +142,38 @@ const CustomOutfitScreen = () => {
     }, [])
   );
 
+  const getItems = async () => {
+    const accessToken = await SecureStore.getItemAsync('accessToken')
+    const closetId = await SecureStore.getItemAsync('shared_closet_id')
+
+    const axiosConfig = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+
+    try {
+      const response = await axios.get(
+        `https://vcloset.xyz/api/items/closet/${closetId}`,
+        axiosConfig
+      )
+      setItems(response.data)
+      setTops(response.data.filter((top) => top.category.title === 'Tops'))
+      setBottoms(
+        response.data.filter((bottom) => bottom.category.title === 'Bottoms')
+      )
+
+      Animated.timing(fadeIn, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: false,
+      }).start()
+      setLoading(false)
+    } catch (error) {
+      console.error('Error fetching items:', error)
+    }
+  }
+
   const fetchItems = async () => {
     setLoading(true);
 
@@ -149,10 +181,13 @@ const CustomOutfitScreen = () => {
     const accessToken = await SecureStore.getItemAsync('accessToken');
 
     try {
-
-      const items2 = await AsyncStorage.getItem('items');
-      const response = JSON.parse(items2);
+      const closetId = await AsyncStorage.getItem('shared_closet_id');
+      const response = await axios.get(
+        `https://vcloset.xyz/api/items/closet/${closetId}`,
+        axiosConfig
+      )
       
+      response = response.data;
 
 
       setItems(response);
@@ -195,7 +230,7 @@ const CustomOutfitScreen = () => {
     console.log('saving outfit');
 
     const accessToken = await SecureStore.getItemAsync('accessToken');
-    const closet_id = await SecureStore.getItemAsync('closet_id');
+    const closet_id = await SecureStore.getItemAsync('shared_closet_id')
 
     const axiosConfig = {
       headers: {
@@ -224,7 +259,7 @@ const CustomOutfitScreen = () => {
         setSnackBarVisible(true);
       }
     } catch (error) {
-      
+
       console.log(error);
     }
 
@@ -242,124 +277,119 @@ const CustomOutfitScreen = () => {
 
   return (
     <View style={styles.container}>
-    {!loading && items.length === 0 && (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontSize: 20 }}>No items in the closet</Text>
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => navigation.navigate('ScanItem')}
-        >
-          <Text style={{ color: 'white' }}>Add Items</Text>
-        </TouchableOpacity>
-      </View>
-    )}
-    {!loading && items.length > 0 && (
-      <>
-        <Animatable.View animation='fadeIn' duration={1000}>
-          <TouchableOpacity
-            style={styles.saveButton}
-            onPress={openModel}
-          >
-            <FontAwesome name="save" size={24} color="white" />
-          </TouchableOpacity>
-        </Animatable.View>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity onPress={prevTop}>
-            <FontAwesome name="arrow-left" size={24} color="black" />
-          </TouchableOpacity>
-          <ScrollView
-            scrollEnabled={false}
-            ref={topScrollViewRef}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            style={{ flex: 1 }}
-            onScroll={(e) => {
-              setTopOffset(e.nativeEvent.contentOffset.x);
-            }}
-          >
-            {tops.map((item) => (
-              <Image
-                key={item.id}
-                source={{ uri: decodeBase64Image(item.image.blob) }}
-                style={styles.image}
-              />
-            ))}
-          </ScrollView>
-          <TouchableOpacity onPress={nextTop}>
-            <FontAwesome name="arrow-right" size={24} color="black" />
-          </TouchableOpacity>
+      {!loading && items.length === 0 && (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ fontSize: 20 }}>No items in this closet, please ask the owner to add some items</Text>
+
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity onPress={prevBottom}>
-            <FontAwesome name="arrow-left" size={24} color="black" />
-          </TouchableOpacity>
-          <ScrollView
-            ref={bottomScrollViewRef}
-            scrollEnabled={false}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            style={{ flex: 1 }}
-            onScroll={(e) => {
-              setBottomOffset(e.nativeEvent.contentOffset.x);
-            }}
-          >
-            {bottoms.map((item) => (
-              <Image
-                key={item.id}
-                source={{ uri: decodeBase64Image(item.image.blob) }}
-                style={styles.image}
-              />
-            ))}
-          </ScrollView>
-          <TouchableOpacity onPress={nextBottom}>
-            <FontAwesome name="arrow-right" size={24} color="black" />
-          </TouchableOpacity>
-        </View>
-        <Modal
-          visible={isModalVisible}
-          backdropOpacity={0.5}
-          animationType="slide"
-          style={styles.modalContainer}
-          transparent={true}
-        >
-          <View style={styles.modalView}>
-            <Text style={styles.modalTitle}>Description:</Text>
-            <TextInput
-              style={styles.messageInput}
-              placeholder="Type the description of the outfit here"
-              value={description}
-              onChangeText={(description) => setDescription(description)}
-            />
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => setModalVisible(false)}
-              >
-                <Text style={styles.modalButtonText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={handleSaveOutfit}
-              >
-                <Text style={styles.modalButtonText}>Confirm</Text>
-              </TouchableOpacity>
-            </View>
+      )}
+      {!loading && items.length > 0 && (
+        <>
+          <Animatable.View animation='fadeIn' duration={1000}>
+            <TouchableOpacity
+              style={styles.saveButton}
+              onPress={openModel}
+            >
+              <FontAwesome name="save" size={24} color="white" />
+            </TouchableOpacity>
+          </Animatable.View>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity onPress={prevTop}>
+              <FontAwesome name="arrow-left" size={24} color="black" />
+            </TouchableOpacity>
+            <ScrollView
+              scrollEnabled={false}
+              ref={topScrollViewRef}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              style={{ flex: 1 }}
+              onScroll={(e) => {
+                setTopOffset(e.nativeEvent.contentOffset.x);
+              }}
+            >
+              {tops.map((item) => (
+                <Image
+                  key={item.id}
+                  source={{ uri: decodeBase64Image(item.image.blob) }}
+                  style={styles.image}
+                />
+              ))}
+            </ScrollView>
+            <TouchableOpacity onPress={nextTop}>
+              <FontAwesome name="arrow-right" size={24} color="black" />
+            </TouchableOpacity>
           </View>
-        </Modal>
-        <SnackBar
-          visible={snackBarVisible}
-          message={snackBarMessage}
-          onDismiss={hideSnackBar}
-        />
-      </>
-    )}
-    {loading && (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ImagesLoading />
-      </View>
-    )}
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity onPress={prevBottom}>
+              <FontAwesome name="arrow-left" size={24} color="black" />
+            </TouchableOpacity>
+            <ScrollView
+              ref={bottomScrollViewRef}
+              scrollEnabled={false}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              style={{ flex: 1 }}
+              onScroll={(e) => {
+                setBottomOffset(e.nativeEvent.contentOffset.x);
+              }}
+            >
+              {bottoms.map((item) => (
+                <Image
+                  key={item.id}
+                  source={{ uri: decodeBase64Image(item.image.blob) }}
+                  style={styles.image}
+                />
+              ))}
+            </ScrollView>
+            <TouchableOpacity onPress={nextBottom}>
+              <FontAwesome name="arrow-right" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
+          <Modal
+            visible={isModalVisible}
+            backdropOpacity={0.5}
+            animationType="slide"
+            style={styles.modalContainer}
+            transparent={true}
+          >
+            <View style={styles.modalView}>
+              <Text style={styles.modalTitle}>Description:</Text>
+              <TextInput
+                style={styles.messageInput}
+                placeholder="Type the description of the outfit here"
+                value={description}
+                onChangeText={(description) => setDescription(description)}
+              />
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <Text style={styles.modalButtonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={handleSaveOutfit}
+                >
+                  <Text style={styles.modalButtonText}>Confirm</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+          <SnackBar
+            visible={snackBarVisible}
+            message={snackBarMessage}
+            onDismiss={hideSnackBar}
+          />
+        </>
+      )}
+      {loading && (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ImagesLoading />
+        </View>
+      )}
     </View>
   );
 };
@@ -467,4 +497,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomOutfitScreen;
+export default ShareCustomOutfitScreen;

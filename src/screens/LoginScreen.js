@@ -148,7 +148,7 @@ const LoginScreen = () => {
               source={require('../../assets/logo2.png')}
               style={styles.customLogo}
             />
-            <Text style={styles.welcomeTitle}>Welcome to Vardrobe</Text>
+            <Text style={styles.welcomeTitle}>Welcome to V-Closet</Text>
             <TouchableOpacity style={styles.nextButton} onPress={slideUp}>
               <Text style={styles.nextButtonText}>NEXT</Text>
             </TouchableOpacity>
@@ -278,6 +278,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 40,
     color: '#333333',
+    // 3d 
+    textShadowColor: '#000000',
+    textShadowOffset: { width: 0, height: 2 },
   },
   nextButton: {
     width: 200,

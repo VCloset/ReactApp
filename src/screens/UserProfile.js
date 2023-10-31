@@ -87,6 +87,7 @@ function UserProfile() {
 
   const updateUserDetails = async () => {
     try {
+      setIsEditing(false);
       const accessToken = await SecureStore.getItemAsync('accessToken');
       const user_id = userData.id;
 
@@ -101,9 +102,6 @@ function UserProfile() {
           },
         }
       );
-
-      console.log('User details updated:', response.data);
-      setIsEditing(false);
     } catch (error) {
       if (error.response.status === 401) {
         await SecureStore.deleteItemAsync('accessToken');
@@ -116,8 +114,6 @@ function UserProfile() {
 
   // update password
   const handleUpdatePassword = () => {
-    // take user to password update screen
-    // navigate to password update screen
     navigation.navigate('UpdatePassword', { userId: userData.id });
 
   };
@@ -186,9 +182,10 @@ function UserProfile() {
     }
 
     const result = await ImagePicker.launchImageLibraryAsync();
-
+    const uri = result.assets.map(x => x.uri).toString()
     if (!result.cancelled) {
-      encodeImage(result.uri)
+      encodeImage(uri)
+      console.log('base64Image', uri)
 
       setSelectedImage(base64Image);
     }

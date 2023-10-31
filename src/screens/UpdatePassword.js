@@ -16,6 +16,7 @@ function UpdatePassword({navigation}) {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  const userId = useRoute().params.userId;
   const passwordIsValid = () => {
     const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(newPassword);
     const hasThreeDigits = (newPassword.match(/\d/g) || []).length >= 3;
