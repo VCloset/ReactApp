@@ -1,4 +1,4 @@
-package com.vc;
+package com.anonymous.VC;
 
 import android.os.Build;
 import android.os.Bundle;

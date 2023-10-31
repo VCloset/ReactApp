@@ -1,4 +1,4 @@
-package com.vc;
+package com.anonymous.VC;
 
 import android.app.Application;
 import android.content.res.Configuration;
