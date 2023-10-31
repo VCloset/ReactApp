@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Alert, Button } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
 import CustomAnimatedLoading from './components/CustomAnimatedLoading';
 import { useFocusEffect } from '@react-navigation/native';
 import ImagesLoading from './components/ImagesLoading';
 import { Swipeable, RectButton } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
 
 
 const ManageSharedScreen = () => {
   const [closetAccess, setClosetAccess] = useState([]);
   const [usersWithAccess, setUsersWithAccess] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+  const navigation = useNavigation();
 
   useFocusEffect(
     React.useCallback(() => {
@@ -87,7 +90,12 @@ const ManageSharedScreen = () => {
       ) : (
         <View>
           {closetAccess.length === 0 && (
-            <Text style={styles.title}>No users have access to your closet</Text>
+            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={styles.title}>No users have access to your closet</Text>
+              <Text style={{ fontSize: 16, color: '#444' }}> Share your closet with others to give them access.</Text>
+              <Button style={{ marginTop: 20, marginBottom: 20, width: 200, color: 'black' }}
+                title="Share Your Closet" onPress={() => navigation.navigate('Share Closet')} />
+            </View>
           )}
           {closetAccess.length > 0 && (
 

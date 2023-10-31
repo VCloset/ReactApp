@@ -199,7 +199,21 @@ const ScanItemScreen = () => {
       setImage(uri);
     }
   };
+  
+  const generateOutfits = async () => {
+    const accessToken = await get('accessToken');
 
+    try {
+      await axios.get('https://vcloset.xyz/api/generateOutfitsAll', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+    } catch (error) {
+    //  pass
+    
+    }
+  };
 
   const handleAddItem = async () => {
 
@@ -229,15 +243,7 @@ const ScanItemScreen = () => {
 
       formData.append('description', 'Image -');
       formData.append('name', name);
-
-      const response2 = await axios.post('https://vcloset.xyz/api/items', formData, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      navigation.navigate('Item');
-      // clear 
+      setLoading(false);
       forceUpdate(true);
       setImage(null);
       setCategory('');
@@ -245,6 +251,27 @@ const ScanItemScreen = () => {
       setTags('');
       setName('');
       forceUpdate(false);
+      // alert the user that the item was added and it will be visisble in the closet in a few seconds after the image is processed
+      Alert.alert(
+        'Item Added',
+        'Your item will be visible in your closet in a few seconds after the image is processed.',
+        [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('Item'),
+          },
+        ],
+        { cancelable: false }
+      );
+
+      const response2 = await axios.post('https://vcloset.xyz/api/items', formData, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      generateOutfits();
     } catch (error) {
       console.error('Error adding item:', error);
     } finally {

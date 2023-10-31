@@ -14,6 +14,7 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from '@react-navigation/native';
 import { KeyboardAvoidingView } from 'react-native';
+import * as Keychain from 'react-native-keychain';
 
 const colors = {
   backgroundStart: '#FFF5E1', // Light background color
@@ -43,6 +44,10 @@ const LoginScreen = () => {
 
   async function save(key, value) {
     await SecureStore.setItemAsync(key, value);
+  }
+
+  async function saveKeychain(key, value) {
+    await Keychain.setGenericPassword(key, value);
   }
   const handleLogin = async () => {
 
@@ -78,6 +83,8 @@ const LoginScreen = () => {
       setSessionId(session_id);
       await save('accessToken', access_token);
       await save('sessionId', session_id);
+      console.log('session_id: ', session_id);
+      await saveKeychain('sessionId', session_id);
       getClosetID();
       navigation.navigate('HomeLogin');
     } catch (error) {
@@ -141,7 +148,7 @@ const LoginScreen = () => {
               source={require('../../assets/logo2.png')}
               style={styles.customLogo}
             />
-            <Text style={styles.welcomeTitle}>Welcome to Vardrobe</Text>
+            <Text style={styles.welcomeTitle}>Welcome to V-Closet</Text>
             <TouchableOpacity style={styles.nextButton} onPress={slideUp}>
               <Text style={styles.nextButtonText}>NEXT</Text>
             </TouchableOpacity>
@@ -149,13 +156,8 @@ const LoginScreen = () => {
         )}
 
         {!isWelcomeVisible && (
-          <KeyboardAvoidingView
-            style={{ flex: 1, width: '100%', height: '100%' }}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
-            enabled
-          >
-            <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', width: '100%', margin: 0 }}>
+
+            <ScrollView style={{ width: '100%' }}>
               <LinearGradient
                 colors={[colors.backgroundStart, colors.backgroundEnd]}
                 style={styles.container}>
@@ -215,7 +217,6 @@ const LoginScreen = () => {
                 {error ? <Text style={styles.errorText}>{error}</Text> : null}
               </LinearGradient>
             </ScrollView>
-          </KeyboardAvoidingView>
         )}
       </Animated.View>
 
@@ -277,6 +278,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 40,
     color: '#333333',
+    // 3d 
+    textShadowColor: '#000000',
+    textShadowOffset: { width: 0, height: 2 },
   },
   nextButton: {
     width: 200,

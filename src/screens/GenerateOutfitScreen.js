@@ -16,6 +16,8 @@ import * as Animatable from 'react-native-animatable';
 import CustomAnimatedLoading from './components/CustomAnimatedLoading';
 import ImagesLoading from './components/ImagesLoading';
 import { FontAwesome } from '@expo/vector-icons'; // Import FontAwesome icons
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 const colors = {
   backgroundStart: '#FFF5E1',
@@ -38,16 +40,63 @@ const GenerateOutfitScreen = () => {
   const [bottomImage, setBottomImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
-
+  const [items, setItems] = useState([]); // [top, bottom
   const [snackBarVisible, setSnackBarVisible] = useState(false);
   const [snackBarMessage, setSnackBarMessage] = useState('');
+  const [tops, setTops] = useState([]);
+  const [bottoms, setBottoms] = useState([]);
+  const [itemCheck, setItemCheck] = useState(false); // Check if there are enough items in closet
 
   const navigation = useNavigation();
   const scrollViewRef = useRef();
 
   useEffect(() => {
+    fetchItems();
     resetComponentState();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchItems();
+      resetComponentState();
+    }, [])
+  );
+  const getItems = async () => {
+    const itemsRes = await axios.get(`https://vcloset.xyz/api/items`, {
+      headers: {
+        Authorization: 'Bearer ' + accessToken,
+        accept: 'application/json',
+      },
+
+    });
+    return itemsRes.data;
+  };
+  const fetchItems = async () => {
+    // get items from async storage
+    const items2 = await AsyncStorage.getItem('items');
+    
+    if (items2) {
+      const parsedItems = JSON.parse(items2);
+      setItems(parsedItems);  
+      // filter items by category
+      setTops(parsedItems.filter(item => item.category_id === 1));
+      setBottoms(parsedItems.filter(item => item.category_id === 2));
+      const tempTops = parsedItems.filter(item => item.category_id === 1);
+      const tempBottoms = parsedItems.filter(item => item.category_id === 2);
+     
+
+      if (tempTops.length >= 3 && tempBottoms.length >= 3) {
+        setItemCheck(true);
+
+      }else{
+        console.log("not enough items");
+      }
+
+    }
+    else {
+      setItems(await getItems());
+    }
+  };
 
   const resetComponentState = () => {
     setGeneratedOutfit(null);
@@ -89,27 +138,38 @@ const GenerateOutfitScreen = () => {
       setGeneratedOutfit(response.data);
       const top = parseInt(response.data.top);
 
-      const topResponse = await axios.get(
-        `https://vcloset.xyz/api/items/${top}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      setTopImage(topResponse.data.image.blob);
+      // const topResponse = await axios.get(
+      //   `https://vcloset.xyz/api/items/${top}`,
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${accessToken}`,
+      //     },
+      //   }
+      // );
+      
+      // find top item in items array
+      const topItem = items.find(item => item.id === top);
+      setTopImage(topItem.image.blob);
+
+      // setTopImage(topResponse.data.image.blob);
 
       const bottom = parseInt(response.data.bottom);
 
-      const bottomResponse = await axios.get(
-        `https://vcloset.xyz/api/items/${bottom}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      setBottomImage(bottomResponse.data.image.blob);
+
+      // const bottomResponse = await axios.get(
+      //   `https://vcloset.xyz/api/items/${bottom}`,
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${accessToken}`,
+      //     },
+      //   }
+      // );
+      // setBottomImage(bottomResponse.data.image.blob);
+
+      // find bottom item in items array
+      const bottomItem = items.find(item => item.id === bottom);
+      setBottomImage(bottomItem.image.blob);
+
       newOutfit = { ...response.data };
 
       // Scroll to the position where both top and bottom images are visible together
@@ -192,6 +252,7 @@ const GenerateOutfitScreen = () => {
         value={description}
         onChangeText={(text) => setDescription(text)}
       />
+      { itemCheck && (
       <Animatable.View
         animation='pulse'
         easing='ease-out'
@@ -204,6 +265,13 @@ const GenerateOutfitScreen = () => {
           <Text style={styles.buttonText}>Generate</Text>
         </TouchableOpacity>
       </Animatable.View>
+      )} 
+      { !itemCheck && (
+        <Text style={styles.error}>
+          Please add at least 3 tops and 3 bottoms to your closet to generate an outfit.
+        </Text>
+      )}
+
       {loading && (
         <View style={styles.loadingContainer}>
           <ImagesLoading />
@@ -332,6 +400,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     maxHeight: 200,
+  },
+  error: {
+    color: colors.errorText,
+    fontWeight: 'bold',
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
 
