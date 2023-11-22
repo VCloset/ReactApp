@@ -53,7 +53,7 @@ const OutfitScreen = () => {
 
       // wait for items to be fetched
       const items2 = await AsyncStorage.getItem('items');
-      const items = JSON.parse(items2);
+      let items = JSON.parse(items2);
       
       if (items.length === 0) {
         

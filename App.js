@@ -40,6 +40,7 @@ import ImagesLoading from './src/screens/components/ImagesLoading';
 
 
 import { View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Drawer = createDrawerNavigator()
 const Tab = createBottomTabNavigator()
@@ -51,47 +52,110 @@ const TopTab = createMaterialTopTabNavigator();
 // Top Tabs for Outfit Section
 function OutfitTopTabs() {
   return (
-    <TopTab.Navigator initialRouteName="OutfitScreen" screenOptions={{
-      showIcon: true, showLabel: true, activeTintColor: '#FF6B6B', inactiveTintColor: '#748c94', labelStyle: { fontSize: 12, fontWeight: 'bold', paddingTop: 50 },
-      tabBarStyle: {
-        paddingTop: 50,
-      },
-    }}>
-      <TopTab.Screen name="GenerateOutfit" component={GenerateOutfitScreen} options={{ title: 'Generate' }} headerShown={false} />
-      <TopTab.Screen name="OutfitScreen" component={OutfitScreen} options={{ title: 'View' }} />
-      <TopTab.Screen name="OutfitsMatching" component={OutfitMatchingScreen} options={{ title: 'Matching' }} />
-      <TopTab.Screen name="CustomOutfit" component={CustomOutfitScreen} options={{ title: 'Custom' }} />
-    </TopTab.Navigator>
-  );
+    <SafeAreaView style={{flex:1}}>
+      <TopTab.Navigator
+        initialRouteName='OutfitScreen'
+        screenOptions={{
+          showIcon: true,
+          showLabel: true,
+          activeTintColor: '#FF6B6B',
+          inactiveTintColor: '#748c94',
+          labelStyle: { fontSize: 12, fontWeight: 'bold' },
+          // tabBarStyle: {
+          //   paddingTop: 50,
+          // },
+        }}>
+        <TopTab.Screen
+          name='GenerateOutfit'
+          component={GenerateOutfitScreen}
+          options={{ title: 'Generate' }}
+          headerShown={false}
+        />
+        <TopTab.Screen
+          name='OutfitScreen'
+          component={OutfitScreen}
+          options={{ title: 'View' }}
+        />
+        <TopTab.Screen
+          name='OutfitsMatching'
+          component={OutfitMatchingScreen}
+          options={{ title: 'Matching' }}
+        />
+        <TopTab.Screen
+          name='CustomOutfit'
+          component={CustomOutfitScreen}
+          options={{ title: 'Custom' }}
+        />
+      </TopTab.Navigator>
+    </SafeAreaView>
+  )
 }
 
 // Top Tabs for My Collection Section
 function MyCollectionTopTabs() {
   return (
-    <TopTab.Navigator initialRouteName="ItemScreen" screenOptions={{
-      showIcon: true, showLabel: true, activeTintColor: '#FF6B6B', inactiveTintColor: '#748c94', labelStyle: { fontSize: 12, fontWeight: 'bold', paddingTop: 50 },
-      tabBarStyle: {
-        paddingTop: 50,
-      },
-    }}>
-      <TopTab.Screen name="ItemScreen" component={ItemScreen} options={{ title: 'My Collection' }} headerShown={false} />
-      <TopTab.Screen name="ScanItem" component={ScanItemScreen} options={{ title: 'Add Item' }} />
-    </TopTab.Navigator>
-  );
+    <SafeAreaView style={{flex: 1}}>
+      <TopTab.Navigator
+        initialRouteName='ItemScreen'
+        screenOptions={{
+          showIcon: true,
+          showLabel: true,
+          activeTintColor: '#FF6B6B',
+          inactiveTintColor: '#748c94',
+          labelStyle: { fontSize: 12, fontWeight: 'bold' },
+          // tabBarStyle: {
+          //   paddingTop: 50,
+          // },
+        }}>
+        <TopTab.Screen
+          name='ItemScreen'
+          component={ItemScreen}
+          options={{ title: 'My Collection' }}
+          headerShown={false}
+        />
+        <TopTab.Screen
+          name='ScanItem'
+          component={ScanItemScreen}
+          options={{ title: 'Add Item' }}
+        />
+      </TopTab.Navigator>
+    </SafeAreaView>
+  )
 }
 
 function ShareClosetTopTabs() {
   return (
-    <TopTab.Navigator initialRouteName='Share Closet' screenOptions={{
-      showIcon: true, showLabel: true, activeTintColor: '#FF6B6B', inactiveTintColor: '#748c94', labelStyle: { fontSize: 12, fontWeight: 'bold', paddingTop: 50 },
-      tabBarStyle: {
-        paddingTop: 50,
-      },
-    }}>
-      <TopTab.Screen name='Share Closet' component={ShareHomeScreen} options={{ title: 'Share' }} headerShown={false} />
-      <TopTab.Screen name='Shared Closets' component={ViewSharedClosets} options={{ title: 'Browse' }} />
-      <TopTab.Screen name='Manage Shared Closet' component={ManageSharedScreen} options={{ title: 'Manage' }} />
-    </TopTab.Navigator>
+    <SafeAreaView style = {{flex: 1}}>
+      <TopTab.Navigator
+        initialRouteName='Share Closet'
+        screenOptions={{
+          showIcon: true,
+          showLabel: true,
+          activeTintColor: '#FF6B6B',
+          inactiveTintColor: '#748c94',
+          labelStyle: { fontSize: 12, fontWeight: 'bold'},
+          // tabBarStyle: {
+          //   paddingTop: 50,
+          // },
+        }}>
+        <TopTab.Screen
+          name='Share Closet'
+          component={ShareHomeScreen}
+          options={{ title: 'Share' }}
+          headerShown={false}
+        />
+        <TopTab.Screen
+          name='Shared Closets'
+          component={ViewSharedClosets}
+          options={{ title: 'Browse' }}
+        />
+        <TopTab.Screen
+          name='Manage Shared Closet'
+          component={ManageSharedScreen}
+          options={{ title: 'Manage' }}
+        />
+      </TopTab.Navigator>
+    </SafeAreaView>
   )
 }
 

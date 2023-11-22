@@ -20,6 +20,7 @@ import ImagesLoading from './components/ImagesLoading';
 
 // async storage
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 async function get(key) {
   return await SecureStore.getItemAsync(key);
@@ -85,29 +86,27 @@ const ItemScreen = () => {
   //   }
   // }, [bottomsCount, topsCount]);
 
-  const renderFilterButtons = () => (
-    <View style={styles.filterContainer}>
-      {['All', 'Tops', 'Bottoms'].map((filter) => (
-        <TouchableOpacity 
-          key={filter}
-          style={[
-            styles.filterButton,
-            selectedFilter === filter ? styles.selectedFilter : null
-          ]}
-          onPress={() => setSelectedFilter(filter)}
-        >
-          <Text 
+  const renderFilterButtons = () => ( 
+      <View style={styles.filterContainer}>
+        {['All', 'Tops', 'Bottoms'].map((filter) => (
+          <TouchableOpacity
+            key={filter}
             style={[
-              styles.filterText,
-              selectedFilter === filter ? styles.selectedFilterText : null
+              styles.filterButton,
+              selectedFilter === filter ? styles.selectedFilter : null,
             ]}
-          >
-            {filter}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
+            onPress={() => setSelectedFilter(filter)}>
+            <Text
+              style={[
+                styles.filterText,
+                selectedFilter === filter ? styles.selectedFilterText : null,
+              ]}>
+              {filter}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+  )
   
 const filteredItems = () => {
   switch (selectedFilter) {
@@ -298,12 +297,10 @@ const filteredItems = () => {
 };
 
 const styles = StyleSheet.create({
-  
   filterContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 20,
-    marginTop: -50,
   },
   filterButton: {
     flex: 1,
@@ -322,7 +319,6 @@ const styles = StyleSheet.create({
   selectedFilterText: {
     color: '#FFF',
   },
-  
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF', // Clean background
