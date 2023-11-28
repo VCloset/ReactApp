@@ -2,88 +2,56 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, ActivityIndicator, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
-// KeyboardAvoidingView
 import {KeyboardAvoidingView} from 'react-native';
 
 const ViewItemScreen = ({ route }) => {
-  const [item, setItem] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedItemName, setEditedItemName] = useState('');
-  const [editedItemDescription, setEditedItemDescription] = useState('');
-
-  // Older function that was used to fetch item details from the API based on item_id (deprecated)
-  // Function to fetch item details from the API based on item_id
-  // const fetchItemDetails = async () => {
-  //   const access_token = await SecureStore.getItemAsync('accessToken');
-  //   try {
-  //     const item_id = route.params.item_id; // Get item_id from route params
-
-  //     // Replace with your API endpoint
-  //     const response = await axios.get(`https://vcloset.xyz/api/items/${item_id}`, {
-  //       headers: {
-  //         Accept: 'application/json',
-  //         Authorization: 'Bearer ' + access_token,
-  //       },
-  //     });
-
-  //     setItem(response.data);
-  //     setEditedItemName(response.data.name);
-  //     setEditedItemDescription(response.data.description);
-  //     setIsLoading(false);
-  //   } catch (error) {
-  //     if (err.response.status === 401) {
-  //       await SecureStore.deleteItemAsync('accessToken');
-  //       await SecureStore.deleteItemAsync('refreshToken');
-  //       navigation.navigate('Login');
-  //     }
-  //     console.error('Error fetching item details:', error);
-  //     setIsLoading(false);
-  //   }
-  // };
+  const [item, setItem] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isEditing, setIsEditing] = useState(false)
+  const [editedItemName, setEditedItemName] = useState('')
+  const [editedItemDescription, setEditedItemDescription] = useState('')
 
   // Function that retrieves item details from the route params
   const fetchItemDetails = async () => {
-    const access_token = await SecureStore.getItemAsync('accessToken');
+    const access_token = await SecureStore.getItemAsync('accessToken')
     try {
-      const item = route.params.item; // Get item_id from route params
-      setItem(item);
-      setEditedItemName(item.name);
-      setEditedItemDescription(item.description);
-      setIsLoading(false);
+      const item = route.params.item // Get item_id from route params
+      setItem(item)
+      setEditedItemName(item.name)
+      setEditedItemDescription(item.description)
+      setIsLoading(false)
     } catch (error) {
-      console.error('Error fetching item details:', error);
-      setIsLoading(false);
+      console.error('Error fetching item details:', error)
+      setIsLoading(false)
     }
-  };
+  }
 
   const decodeBase64Image = (base64Data) => {
-    return `data:image/png;base64,` + base64Data;
-  };
+    return `data:image/png;base64,` + base64Data
+  }
 
   useEffect(() => {
-    fetchItemDetails(); // Fetch item details when the component mounts
-  }, []);
+    fetchItemDetails() // Fetch item details when the component mounts
+  }, [])
 
   const handleEditPress = () => {
-    setIsEditing(!isEditing);
-  };
+    setIsEditing(!isEditing)
+  }
 
   const handleSavePress = async () => {
-
     if (editedItemName.trim === '' || !editedItemName) {
-      alert('Please enter a name for the item.');
-      return;
+      alert('Please enter a name for the item.')
+      return
     }
 
     if (editedItemDescription.trim === '' || !editedItemDescription) {
-      alert('Please enter a description for the item.');
-      return;
+      alert('Please enter a description for the item.')
+      return
     }
 
     try {
-      const access_token = await SecureStore.getItemAsync('accessToken');
-      const item_id = item.id;
+      const access_token = await SecureStore.getItemAsync('accessToken')
+      const item_id = item.id
       const array = []
       array.push(parseInt(item.tags))
       const response = await axios.put(
@@ -99,85 +67,94 @@ const ViewItemScreen = ({ route }) => {
             'Content-Type': 'application/json',
           },
         }
-      );
-  
-      // Handle successful response here, if needed
-      console.log('Item updated successfully:', response.data);
-      
-      item.name = editedItemName;
-      item.description = editedItemDescription;
+      )
 
-      
-  
+      // Handle successful response here, if needed
+      console.log('Item updated successfully:', response.data)
+
+      item.name = editedItemName
+      item.description = editedItemDescription
     } catch (error) {
-      console.error('Error saving item:', error.response.data);
+      console.error('Error saving item:', error.response.data)
       // Handle error here
     }
-    setIsEditing(false);
-  };
+    setIsEditing(false)
+  }
 
   return (
-    <KeyboardAvoidingView 
-    style={{ flex: 1 }} 
-    behavior={Platform.OS === "ios" ? "padding" : "height"} 
-    keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
-    enabled
-  >
-  <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
-    <View style={styles.container}>
-      {isLoading ? (
-        <ActivityIndicator size="large" color="#007AFF" />
-      ) : item ? (
-        <View style={styles.itemContainer}>
-        {/* try if not */}
-          <Image source={{ uri: decodeBase64Image(item.image.blob) }} style={styles.itemImage} />
-          {isEditing ? (
-            <TextInput
-              style={styles.itemNameInput}
-              value={editedItemName}
-              onChangeText={(text) => setEditedItemName(text)}
-            />
-          ) : (
-            <Text style={styles.itemName}>Name: {item.name}</Text>
-          )}
-          <Text style={styles.itemDescription}>Category: {item.category.title}</Text>
-          {/* edit description */}
-          {isEditing ? (
-            <View>
-            <TextInput
-              style={styles.itemDescriptionInput}
-              value={editedItemDescription}
-              onChangeText={(text) => setEditedItemDescription(text)}
-            />
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      enabled>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+        <View style={styles.container}>
+          {isLoading ? (
+            <ActivityIndicator size='large' color='#007AFF' />
+          ) : item ? (
+            <View style={styles.itemContainer}>
+              {/* try if not */}
+              <Image
+                source={{ uri: decodeBase64Image(item.image.blob) }}
+                style={styles.itemImage}
+              />
+              {isEditing ? (
+                <TextInput
+                  style={styles.itemNameInput}
+                  value={editedItemName}
+                  onChangeText={(text) => setEditedItemName(text)}
+                />
+              ) : (
+                <Text style={styles.itemName}>Name: {item.name}</Text>
+              )}
+              <Text style={styles.itemDescription}>
+                Category: {item.category.title}
+              </Text>
+              {/* edit description */}
+              {isEditing ? (
+                <View>
+                  <TextInput
+                    style={styles.itemDescriptionInput}
+                    value={editedItemDescription}
+                    onChangeText={(text) => setEditedItemDescription(text)}
+                  />
+                </View>
+              ) : (
+                <Text style={styles.itemDescription}>
+                  Description: {item.description}
+                </Text>
+              )}
+              {isEditing ? (
+                <View>
+                  <TouchableOpacity
+                    style={styles.saveButton}
+                    onPress={handleSavePress}>
+                    <Text style={styles.buttonText}>Save</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.editButton}
+                    onPress={() => {
+                      setIsEditing(false)
+                    }}>
+                    <Text style={styles.buttonText}>Cancel</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  style={styles.editButton}
+                  onPress={handleEditPress}>
+                  <Text style={styles.buttonText}>Edit</Text>
+                </TouchableOpacity>
+              )}
             </View>
           ) : (
-            <Text style={styles.itemDescription}>Description: {item.description}</Text>
-          )
-          }
-          {/* <Text style={styles.itemDescription}>Description: {item.description}</Text> */}
-          {isEditing ? (
-            <View>
-            <TouchableOpacity style={styles.saveButton} onPress={handleSavePress}>
-              <Text style={styles.buttonText}>Save</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.editButton} onPress={() => {setIsEditing(false)}}>
-              <Text style={styles.buttonText}>Cancel</Text>
-            </TouchableOpacity>
-            </View>
-          ) : (
-
-            <TouchableOpacity style={styles.editButton} onPress={handleEditPress}>
-              <Text style={styles.buttonText}>Edit</Text>
-            </TouchableOpacity>
+            <Text>Error loading item details.</Text>
           )}
         </View>
-      ) : (
-        <Text>Error loading item details.</Text>
-      )}
-    </View>
-  </ScrollView>
+      </ScrollView>
     </KeyboardAvoidingView>
-  );
+  )
 };
 
 const styles = StyleSheet.create({

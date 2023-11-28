@@ -205,7 +205,7 @@ function UserProfile() {
   };
 
   const deleteAccount = async () => {
-    const accessToken = await SecureStore.getItemAsync('accessToken');
+    const accessToken = await SecureStore.getItemAsync('accessToken')
     // alert the user to confirm the deletion
     Alert.alert(
       'Delete Account',
@@ -216,25 +216,25 @@ function UserProfile() {
           onPress: () => {
             // delete the account
             // get the user id
-            const userId = userData.id;
+            const userId = userData.id
             // delete the user
             // headers for authorization
-           
-            console.log('Access token:', accessToken);
-            axios.delete(`https://vcloset.xyz/api/users/${userId}` 
-            , {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
-            })
+
+            console.log('Access token:', accessToken)
+            axios
+              .delete(`https://vcloset.xyz/api/users/${userId}`, {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+              })
               .then((response) => {
-                console.log('User deleted:', response.data);
+                console.log('User deleted:', response.data)
                 // delete the access token
-                SecureStore.deleteItemAsync('accessToken');
-                SecureStore.deleteItemAsync('sessionId');
+                SecureStore.deleteItemAsync('accessToken')
+                SecureStore.deleteItemAsync('sessionId')
 
                 // navigate to the login screen
-                navigation.navigate('Login');
+                navigation.navigate('Login')
               })
               .catch((error) => {
                 Alert.alert(
@@ -247,9 +247,9 @@ function UserProfile() {
                     },
                   ],
                   { cancelable: false }
-                );
-                console.error('Error deleting user:', error.response.data);
-              });
+                )
+                console.error('Error deleting user:', error.response.data)
+              })
           },
         },
         {
@@ -258,152 +258,96 @@ function UserProfile() {
         },
       ],
       { cancelable: false }
-    );
+    )
   }
 
-  // return (
-  //   <SafeAreaView style={{ flex: 1 }}>
-  //     <ScrollView style={styles.container}>
-  //       <TouchableOpacity onPress={openImagePicker} style={styles.imageContainer}>
-  //         {selectedImage ? (
-  //           <Image
-  //             source={{ uri: selectedImage }}
-  //             style={styles.profileImage}
-  //             resizeMode="cover"
-  //           />
-  //         ) : (
-  //           <View style={styles.placeholderImage}>
-  //             <FontAwesome name="camera" size={40} color={colors.primary} />
-  //             <Text style={styles.placeholderText}>Tap to Add Profile Picture</Text>
-  //           </View>
-  //         )}
-  //       </TouchableOpacity>
-  //       <View style={styles.inputContainer}>
-  //         <Text style={styles.label}>Username:</Text>
-  //         <TextInput
-  //           style={[styles.input, isEditing ? styles.editableInput : null]}
-  //           placeholder="Username"
-  //           value={userData.username}
-  //           onChangeText={(text) => setUserData((prevState) => ({ ...prevState, username: text }))}
-  //           editable={false}
-  //         />
-  //       </View>
-  //       <View style={styles.inputContainer}>
-  //         <Text style={styles.label}>First Name:</Text>
-  //         <TextInput
-  //           style={styles.input}
-  //           placeholder="First Name"
-  //           value={userData.first_name}
-  //           onChangeText={(text) => setUserData((prevState) => ({ ...prevState, first_name: text }))}
-  //           editable={isEditing}
-  //         />
-  //       </View>
-  //       <View style={styles.inputContainer}>
-  //         <Text style={styles.label}>Last Name:</Text>
-  //         <TextInput
-  //           style={styles.input}
-  //           placeholder="Last Name"
-  //           value={userData.last_name}
-  //           onChangeText={(text) => setUserData((prevState) => ({ ...prevState, last_name: text }))}
-  //           editable={isEditing}
-  //         />
-  //       </View>
-  //       <View style={styles.buttonGroup}>
-  //         {isEditing ? (
-  //           <>
-  //             <TouchableOpacity style={[styles.button, styles.saveButton]} onPress={updateUserDetails}>
-  //               <Text style={styles.buttonText}>Save</Text>
-  //             </TouchableOpacity>
-  //             <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={cancelEditing}>
-  //               <Text style={styles.buttonText}>Cancel</Text>
-  //             </TouchableOpacity>
-  //           </>
-  //         ) : (
-  //           <TouchableOpacity style={[styles.button, styles.editButton]} onPress={() => setIsEditing(true)}>
-  //             <Text style={styles.buttonText}>Edit</Text>
-  //           </TouchableOpacity>
-  //         )}
-  //       </View>
-  //       <View style={styles.container}>
-  //         <TouchableOpacity style={styles.smallButton} onPress={handleUpdatePassword}>
-  //           <Text style={styles.smallButtonText}>Change Password</Text>
-  //         </TouchableOpacity>
-  //         <TouchableOpacity
-  //           style={[styles.button, styles.logoutButton]}
-  //           onPress={handleLogout}>
-  //           <Text style={styles.buttonText}>Logout</Text>
-  //         </TouchableOpacity>
-  //       </View>
-
-  //       {/* DELETE ACCOUNT BUTTON */}
-
-  //       <View style={styles.buttonContainer}>
-  //         <TouchableOpacity style={[styles.button,styles.deleteButton]} onPress={deleteAccount}>
-  //           <Text style={styles.smallButtonText}>Delete Account</Text>
-  //         </TouchableOpacity>
-  //       </View>
-
-  //     </ScrollView>
-  //   </SafeAreaView>
-
-  // );
-
-   return (
+  return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={styles.container}>
-        <TouchableOpacity onPress={openImagePicker} style={styles.imageContainer}>
+        <TouchableOpacity
+          onPress={openImagePicker}
+          style={styles.imageContainer}>
           {selectedImage ? (
             <Image
               source={{ uri: selectedImage }}
               style={styles.profileImage}
-              resizeMode="cover"
+              resizeMode='cover'
             />
           ) : (
             <View style={styles.placeholderImage}>
-              <FontAwesome name="camera" size={40} color={colors.primary} />
-              <Text style={styles.placeholderText}>Tap to Add Profile Picture</Text>
+              <FontAwesome name='camera' size={40} color={colors.primary} />
+              <Text style={styles.placeholderText}>
+                Tap to Add Profile Picture
+              </Text>
             </View>
           )}
         </TouchableOpacity>
-        
+
         {/* Input Fields */}
         <View style={styles.inputGroup}>
-          {renderInput("Username", userData.username, text => setUserData({ ...userData, username: text }), false)}
-          {renderInput("First Name", userData.first_name, text => setUserData({ ...userData, first_name: text }), isEditing)}
-          {renderInput("Last Name", userData.last_name, text => setUserData({ ...userData, last_name: text }), isEditing)}
+          {renderInput(
+            'Username',
+            userData.username,
+            (text) => setUserData({ ...userData, username: text }),
+            false
+          )}
+          {renderInput(
+            'First Name',
+            userData.first_name,
+            (text) => setUserData({ ...userData, first_name: text }),
+            isEditing
+          )}
+          {renderInput(
+            'Last Name',
+            userData.last_name,
+            (text) => setUserData({ ...userData, last_name: text }),
+            isEditing
+          )}
         </View>
-        
+
         {/* Buttons */}
         <View style={styles.buttonGroup}>
           {isEditing ? (
             <>
-              <TouchableOpacity style={[styles.button, styles.saveButton]} onPress={updateUserDetails}>
+              <TouchableOpacity
+                style={[styles.button, styles.saveButton]}
+                onPress={updateUserDetails}>
                 <Text style={styles.buttonText}>Save</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={cancelEditing}>
+              <TouchableOpacity
+                style={[styles.button, styles.cancelButton]}
+                onPress={cancelEditing}>
                 <Text style={styles.buttonText}>Cancel</Text>
               </TouchableOpacity>
             </>
           ) : (
-            <TouchableOpacity style={[styles.button, styles.editButton]} onPress={() => setIsEditing(true)}>
+            <TouchableOpacity
+              style={[styles.button, styles.editButton]}
+              onPress={() => setIsEditing(true)}>
               <Text style={styles.buttonText}>Edit</Text>
             </TouchableOpacity>
           )}
         </View>
-        <TouchableOpacity style={styles.smallButton} onPress={handleUpdatePassword}>
+        <TouchableOpacity
+          style={styles.smallButton}
+          onPress={handleUpdatePassword}>
           <Text style={styles.smallButtonText}>Change Password</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, styles.logoutButton]} onPress={handleLogout}>
+        <TouchableOpacity
+          style={[styles.button, styles.logoutButton]}
+          onPress={handleLogout}>
           <Text style={styles.buttonText}>Logout</Text>
         </TouchableOpacity>
-        
+
         {/* DELETE ACCOUNT BUTTON */}
-        <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={deleteAccount}>
+        <TouchableOpacity
+          style={[styles.button, styles.deleteButton]}
+          onPress={deleteAccount}>
           <Text style={styles.smallButtonText}>Delete Account</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
-  );
+  )
 }
 
 function renderInput(label, value, onChange, isEditable) {

@@ -143,7 +143,6 @@ const SharedItemsScreen = () => {
   return (
     <View style={styles.container}>
       {renderFilterButtons()}
-      {/* <Header title="My Collection" /> */}
       {loading ? (
         <View style={styles.loaderContainer}>
           <ImagesLoading />

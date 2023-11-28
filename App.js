@@ -196,19 +196,14 @@ const App = () => {
   const [accessToken, setAccessToken] = useState('')
   const [sessionID, setSessionID] = useState('')
   const [tokenExpiry, setTokenExpiry] = useState(0)
-  const navigationRef = useRef(null);
+  const navigationRef = useRef(null)
 
-  const [isLoading, setIsLoading] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false)
 
   async function getSessionID() {
-
     setSessionID(await SecureStore.getItemAsync('sessionId'))
   }
-  const Stack = createStackNavigator();
-
-
-
+  const Stack = createStackNavigator()
 
   const checkTokenExpiry = () => {
     const currentTime = Date.now() / 1000 // Convert to seconds
@@ -221,13 +216,13 @@ const App = () => {
       }
     }
   }
-// pass optional parameter (session_Id) to renewAccessToken 
+  // pass optional parameter (session_Id) to renewAccessToken
   const renewAccessToken = async (savedSessionID = sessionID) => {
     const params = new URLSearchParams()
     if (savedSessionID) {
       params.append('session_id', savedSessionID)
     } else {
-    params.append('session_id', sessionID)
+      params.append('session_id', sessionID)
     }
 
     try {
@@ -255,7 +250,7 @@ const App = () => {
       console.error('Error renewing access token:', error.response.data)
       // Logout user
       // take the user back to the login screen
-      navigationRef.current?.navigate('Login');
+      navigationRef.current?.navigate('Login')
       await SecureStore.deleteItemAsync('accessToken')
       await SecureStore.deleteItemAsync('sessionId')
       await Keychain.resetGenericPassword()
@@ -263,47 +258,41 @@ const App = () => {
       setSessionID('')
     }
   }
-  
 
   if (isLoading) {
     // Show a loading indicator while checking for the session
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-
         <ImagesLoading />
       </View>
-    );
+    )
   }
 
-  // first use effect 
+  // first use effect
   useEffect(() => {
-
     // This effect is for initial credentials check and setting the session ID
     const fetchCredentials = async () => {
       try {
-        const credentials = await Keychain.getGenericPassword();
+        const credentials = await Keychain.getGenericPassword()
         if (credentials) {
-          setSessionID(credentials.password);  // This updates the sessionID state
+          setSessionID(credentials.password) // This updates the sessionID state
         }
       } catch (error) {
-        await Keychain.resetGenericPassword();
-        console.error('Could not retrieve credentials', error);
+        await Keychain.resetGenericPassword()
+        console.error('Could not retrieve credentials', error)
       }
-    };
+    }
 
-    setIsLoading(true);
-    fetchCredentials().then(() => {
-      // setIsLoading(false);  // This should probably be inside a finally block to ensure it runs
-    });
-    setIsLoading(false);
+    setIsLoading(true)
+    fetchCredentials().then(() => {})
+    setIsLoading(false)
 
-    checkTokenExpiry();
-    const tokenRenewalInterval = setInterval(checkTokenExpiry, 60000); // Check every minute
+    checkTokenExpiry()
+    const tokenRenewalInterval = setInterval(checkTokenExpiry, 60000) // Check every minute
 
     // Cleanup interval on component unmount
-    return () => clearInterval(tokenRenewalInterval);
-  }, []);  // Empty dependency array means this useEffect runs once when the component mounts
-
+    return () => clearInterval(tokenRenewalInterval)
+  }, []) // Empty dependency array means this useEffect runs once when the component mounts
 
   // 2nd use effect
   useEffect(() => {
@@ -312,80 +301,36 @@ const App = () => {
       if (sessionID) {
         // Navigate to the home screen or dashboard as there's an active session
 
-        renewAccessToken(sessionID);  // This renews the access token
-        navigationRef.current?.navigate('HomeLogin');
+        renewAccessToken(sessionID) // This renews the access token
+        navigationRef.current?.navigate('HomeLogin')
       } else {
         // If not, we navigate to the login screen
-        navigationRef.current?.navigate('Login');
+        navigationRef.current?.navigate('Login')
       }
-    };
+    }
 
     // If sessionID changes, we check and navigate. This ensures navigation logic
     // is executed right after sessionID is updated and not before.
-    if (!isLoading) { // Only navigate if not loading, prevents unnecessary navigation attempts
-      checkSessionAndNavigate();
+    if (!isLoading) {
+      // Only navigate if not loading, prevents unnecessary navigation attempts
+      checkSessionAndNavigate()
     }
-  }, [sessionID, isLoading, navigationRef]); 
-
-
-  // useEffect(() => {
-  //   const checkSessionAndNavigate = async () => {
-  //     try {
-  //       if (sessionID) {
-  //         // Navigate to the home screen or dashboard as there's an active session
-  //         navigationRef.current?.navigate('HomeLogin');
-  //       } else {
-  //         // If not, we navigate to the login screen
-  //         navigationRef.current?.navigate('Login');
-  //       }
-  //     } catch (error) {
-  //       // Handle errors e.g., navigating to an error screen or logging out the user
-  //       console.error(error);
-  //     }
-
-
-  //   };
-
-
-  //   (async () => {
-  //     try {
-  //       const credentials = await Keychain.getGenericPassword();
-  //       if (credentials) {
-  //         setSessionID(credentials.password);
-  //       }
-  //       console.log('Checked keychain', credentials.password);
-  //     } catch (error) {
-  //       console.error('Could not retrieve credentials', error);
-  //     }
-  //     checkSessionAndNavigate();
-  //     setIsLoading(false);
-  //   })();
-
-
-
-  //   checkTokenExpiry()
-  //   const tokenRenewalInterval = setInterval(checkTokenExpiry, 60000) // Check every minute
-  //   // Call the function to initiate the process
-  //   return () => clearInterval(tokenRenewalInterval)
-  // }, []);
-
-
-
-  // useEffect(() => {
-  //   getKeychainSessionID()
-  //   checkTokenExpiry()
-  //   // getClosetID()
-  //   const tokenRenewalInterval = setInterval(checkTokenExpiry, 60000) // Check every minute
-  //   return () => clearInterval(tokenRenewalInterval)
-  // }, [])
+  }, [sessionID, isLoading, navigationRef])
 
   return (
     <NavigationContainer ref={navigationRef}>
       {/* if session id is not null, then go to home screen, else go to login screen */}
 
-
-      <Stack.Navigator {...this.props} initialRouteName={sessionID !== '' && !sessionID ? 'HomeLogin' : 'Login'}>
-        <Stack.Screen name="Logout" component={Logout} options={{ headerShown: false }} />
+      <Stack.Navigator
+        {...this.props}
+        initialRouteName={
+          sessionID !== '' && !sessionID ? 'HomeLogin' : 'Login'
+        }>
+        <Stack.Screen
+          name='Logout'
+          component={Logout}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name='Login'
           component={LoginScreen}
@@ -411,9 +356,21 @@ const App = () => {
             headerTintColor: '#333333',
           }}
         />
-        <Stack.Screen name='ViewItem' options={{ title: "" }} component={ViewItemScreen} />
-        <Stack.Screen name='ViewOutfit' options={{ title: "" }} component={ViewOutfitScreen} />
-        <Stack.Screen name='UpdatePassword' options={{ title: "" }} component={UpdatePassword} />
+        <Stack.Screen
+          name='ViewItem'
+          options={{ title: '' }}
+          component={ViewItemScreen}
+        />
+        <Stack.Screen
+          name='ViewOutfit'
+          options={{ title: '' }}
+          component={ViewOutfitScreen}
+        />
+        <Stack.Screen
+          name='UpdatePassword'
+          options={{ title: '' }}
+          component={UpdatePassword}
+        />
         <Stack.Screen
           name='Shared Closet Home'
           component={SharedClosetHomeScreen}
@@ -426,13 +383,11 @@ const App = () => {
         <Stack.Screen name='SharedItems' component={SharedItemsScreen} />
         <Stack.Screen
           name='HomeLogin'
-
           options={{
             title: 'My Collections',
             headerShown: false, // Hide the header for the Home screen
           }}>
           {() => (
-
             <Tab.Navigator
               initialRouteName='Item'
               screenOptions={{
@@ -511,7 +466,7 @@ const App = () => {
                 options={{
                   tabBarIcon: ({ focused }) => (
                     <AntDesign
-                      name="user"
+                      name='user'
                       size={40} // Adjust the size of the icon
                       color={focused ? '#FF6B6B' : '#748c94'}
                     />

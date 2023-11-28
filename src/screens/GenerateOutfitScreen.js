@@ -137,34 +137,14 @@ const GenerateOutfitScreen = () => {
       }
       setGeneratedOutfit(response.data);
       const top = parseInt(response.data.top);
-
-      // const topResponse = await axios.get(
-      //   `https://vcloset.xyz/api/items/${top}`,
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${accessToken}`,
-      //     },
-      //   }
-      // );
       
       // find top item in items array
       const topItem = items.find(item => item.id === top);
       setTopImage(topItem.image.blob);
 
-      // setTopImage(topResponse.data.image.blob);
 
       const bottom = parseInt(response.data.bottom);
 
-
-      // const bottomResponse = await axios.get(
-      //   `https://vcloset.xyz/api/items/${bottom}`,
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${accessToken}`,
-      //     },
-      //   }
-      // );
-      // setBottomImage(bottomResponse.data.image.blob);
 
       // find bottom item in items array
       const bottomItem = items.find(item => item.id === bottom);

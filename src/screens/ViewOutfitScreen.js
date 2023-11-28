@@ -64,8 +64,6 @@ const ViewOutfitScreen = ({ route }) => {
       // Handle the response as needed
       if (response.status === 200) {
         outfit.liked = false;
-        // refresh the view 
-        // forceUpdate();
       } else {
         console.error('Unexpected response status:', response.status);
       }

@@ -30,17 +30,6 @@ const OutfitScreen = () => {
         outfit.items.sort((a, b) => a.category_id - b.category_id);
       });
 
-      // const getItems = async (outfit) => {
-      //   const itemsRes = await axios.get(`https://vcloset.xyz/api/items`, {
-      //     headers: {
-      //       Authorization: 'Bearer ' + accessToken,
-      //       accept: 'application/json',
-      //     },
-      //   });
-      //   return itemsRes.data;
-      // };
-      // const items = await getItems();
-
       const getItems = async () => {
         const itemsRes = await axios.get(`https://vcloset.xyz/api/items`, {
           headers: {
@@ -113,7 +102,6 @@ const OutfitScreen = () => {
               />
             </View>
           ))}
-          {/* <Text style={styles.cardDescription}>{outfit.description}</Text> */}
           <View style={styles.tagContainer}>
             <MaterialCommunityIcons
               name={outfit.tags.includes(3) ? 'robot' : 'account'}
@@ -136,7 +124,6 @@ const OutfitScreen = () => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        {/* <ActivityIndicator size="large" color="#0000ff" /> */}
         <ImagesLoading />
       </View>
     );

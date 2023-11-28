@@ -68,11 +68,12 @@ const ViewSharedClosets = () => {
   );
 
   const handleClosetSelect = async (closet) => {
-    await SecureStore.setItemAsync('shared_closet_id', closet.closet_id.toString());
+    await SecureStore.setItemAsync(
+      'shared_closet_id',
+      closet.closet_id.toString()
+    )
 
-    // const test = await SecureStore.getItemAsync('shared_closet_id');
-    // setSelectedCloset(closet);
-    navigation.navigate('Shared Closet Home');
+    navigation.navigate('Shared Closet Home')
   };
 
   return (

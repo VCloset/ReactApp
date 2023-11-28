@@ -101,10 +101,9 @@ const SharedOutfitScreen = () => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        {/* <ActivityIndicator size="large" color="#0000ff" /> */}
         <ImagesLoading />
       </View>
-    );
+    )
   }
 
   // Check if there are no saved outfits

@@ -80,11 +80,6 @@ const ItemScreen = () => {
     }, [])
   );
 
-  // useEffect(() => {
-  //   if (bottomsCount >= 3 && topsCount >= 3) {
-  //     generateOutfits();
-  //   }
-  // }, [bottomsCount, topsCount]);
 
   const renderFilterButtons = () => ( 
       <View style={styles.filterContainer}>
@@ -253,7 +248,6 @@ const filteredItems = () => {
       <TouchableOpacity
       
         onPress={() => {
-          // navigation.navigate('ViewItem', { item_id: item.id });
           navigation.navigate('ViewItem', { item: item});
         }}
         style={{ width: '100%' }}

@@ -308,9 +308,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   refreshButton: {
-    // position: 'absolute',
-    // bottom: 300, // Adjust the top position as needed
-    // right: -150, // Adjust the right position as needed
     backgroundColor: colors.buttonBackground,
     borderRadius: 20,
     width: 40,
@@ -323,6 +320,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.primaryText,
   },
-});
+})
 
 export default OutfitMatchingScreen;
